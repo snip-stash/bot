@@ -2,10 +2,15 @@ import { REST } from "@discordjs/rest";
 import { SimpleIdentifyThrottler, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from "@discordjs/ws";
 import { GatewayIntentBits } from "discord-api-types/v10";
 
-const rest = new REST().setToken(process.env["DISCORD_TOKEN"]!);
+const token = process.env["DISCORD_TOKEN"];
+if (!token) {
+    throw new Error("No token provided.");
+}
+
+const rest = new REST().setToken(token);
 
 const manager = new WebSocketManager({
-    token: process.env["DISCORD_TOKEN"]!,
+    token,
     intents:
         GatewayIntentBits.Guilds |
         GatewayIntentBits.GuildMembers |
