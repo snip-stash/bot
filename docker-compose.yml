@@ -13,3 +13,13 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+  cache:
+    container_name: cache
+    image: eqalpha/keydb:alpine
+    restart: unless-stopped
+    volumes:
+      - cache-data:/data
+      - ./config/cache/keydb.conf:/etc/keydb/keydb.conf
+
+volumes:
+  cache-data:
