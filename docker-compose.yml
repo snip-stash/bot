@@ -1,0 +1,15 @@
+services:
+  # bot:
+  #   build:
+  #     context: .
+  #     target: bot
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  gateway:
+    build:
+      context: .
+      target: gateway
+    restart: unless-stopped
+    env_file:
+      - .env
