@@ -4,6 +4,7 @@ services:
   #     context: .
   #     target: bot
   #   restart: unless-stopped
+  #   tty: true
   #   env_file:
   #     - .env
   gateway:
@@ -11,12 +12,14 @@ services:
       context: .
       target: gateway
     restart: unless-stopped
+    tty: true
     env_file:
       - .env
   cache:
     container_name: cache
     image: eqalpha/keydb:alpine
     restart: unless-stopped
+    tty: true
     volumes:
       - cache-data:/data
       - ./config/cache/keydb.conf:/etc/keydb/keydb.conf

@@ -1,6 +1,13 @@
+import { workerData } from "node:worker_threads";
 import { WebSocketShardEvents, WorkerBootstrapper } from "@discordjs/ws";
+import { calculateWorkerId, env } from "core";
+import { Logger } from "log";
 
 const bootstrapper = new WorkerBootstrapper();
+const logger = new Logger();
+
+const workerId = calculateWorkerId(workerData.shardIds, env.SHARDS_PER_WORKER);
+logger.info("Starting...", `Worker ${workerId}`, { shardIds: workerData.shardIds });
 
 void bootstrapper.bootstrap({
     forwardEvents: [
@@ -12,7 +19,7 @@ void bootstrapper.bootstrap({
     ],
     shardCallback: (shard) => {
         shard.on(WebSocketShardEvents.Dispatch, async (event) => {
-            console.log(`Shard ${shard.id} received event ${event.data.t}`);
+            logger.debugSingle(`Shard ${shard.id} received event ${event.data.t}`, "Gateway");
         });
     },
 });
