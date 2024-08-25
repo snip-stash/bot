@@ -4,8 +4,8 @@
     "version": "1.0.0",
     "main": "dist/index.js",
     "scripts": {
-        "check": "biome check . --apply",
-        "check-unsafe": "biome check . --apply-unsafe",
+        "check": "biome check . --write",
+        "check-unsafe": "biome check . --write-unsafe",
         "build": "pnpm run -r build"
     },
     "license": "GPL-3.0",
