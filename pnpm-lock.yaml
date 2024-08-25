@@ -18,6 +18,16 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
+  packages/core:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@types/node':
+        specifier: ^22.5.0
+        version: 22.5.0
+
   packages/gateway:
     dependencies:
       '@discordjs/rest':
@@ -29,9 +39,28 @@ importers:
       bufferutil:
         specifier: ^4.0.8
         version: 4.0.8
+      core:
+        specifier: workspace:*
+        version: link:../core
       discord-api-types:
         specifier: ^0.37.97
         version: 0.37.97
+      log:
+        specifier: workspace:*
+        version: link:../logger
+    devDependencies:
+      '@types/node':
+        specifier: ^22.5.0
+        version: 22.5.0
+
+  packages/logger:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      core:
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       '@types/node':
         specifier: ^22.5.0
@@ -130,6 +159,10 @@ packages:
     resolution: {integrity: sha512-4T53u4PdgsXqKaIctwF8ifXlRTTmEPJ8iEPWFdGZvcf7sbwYo6FKFEX9eNNAnzFZ7EzJAQ3CJeOtCRA4rDp7Pw==}
     engines: {node: '>=6.14.2'}
 
+  chalk@5.3.0:
+    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
   discord-api-types@0.37.83:
     resolution: {integrity: sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==}
 
@@ -224,6 +257,9 @@ packages:
       utf-8-validate:
         optional: true
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
 snapshots:
 
   '@biomejs/biome@1.8.3':
@@ -310,6 +346,8 @@ snapshots:
     dependencies:
       node-gyp-build: 4.8.1
 
+  chalk@5.3.0: {}
+
   discord-api-types@0.37.83: {}
 
   discord-api-types@0.37.97: {}
@@ -372,3 +410,5 @@ snapshots:
   ws@8.18.0(bufferutil@4.0.8):
     optionalDependencies:
       bufferutil: 4.0.8
+
+  zod@3.23.8: {}

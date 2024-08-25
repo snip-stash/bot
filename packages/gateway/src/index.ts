@@ -1,16 +1,14 @@
 import { REST } from "@discordjs/rest";
 import { SimpleIdentifyThrottler, WebSocketManager, WebSocketShardEvents, WorkerShardingStrategy } from "@discordjs/ws";
+import { env } from "core";
 import { GatewayIntentBits } from "discord-api-types/v10";
+import { Logger } from "log";
 
-const token = process.env["DISCORD_TOKEN"];
-if (!token) {
-    throw new Error("No token provided.");
-}
-
-const rest = new REST().setToken(token);
+const rest = new REST().setToken(env.DISCORD_TOKEN);
+const logger = new Logger();
 
 const manager = new WebSocketManager({
-    token,
+    token: env.DISCORD_TOKEN,
     intents:
         GatewayIntentBits.Guilds |
         GatewayIntentBits.GuildMembers |
@@ -35,19 +33,19 @@ const manager = new WebSocketManager({
 });
 
 manager.on(WebSocketShardEvents.Resumed, ({ shardId }) => {
-    console.log(`Shard ${shardId} resumed.`);
+    logger.debugSingle(`Shard ${shardId} resumed.`, "Gateway");
 });
 
 manager.on(WebSocketShardEvents.Ready, ({ shardId }) => {
-    console.log(`Shard ${shardId} ready.`);
+    logger.infoSingle(`Shard ${shardId} ready.`, "Gateway");
 });
 
 manager.on(WebSocketShardEvents.Closed, ({ shardId }) => {
-    console.log(`Shard ${shardId} closed.`);
+    logger.debugSingle(`Shard ${shardId} closed.`, "Gateway");
 });
 
 manager.on(WebSocketShardEvents.Error, ({ shardId, error }) => {
-    console.error(`Shard ${shardId} errored.`, error);
+    logger.error(`Shard ${shardId} errored.`, "Gateway", error);
 });
 
 manager.connect();

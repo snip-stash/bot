@@ -16,9 +16,11 @@ RUN pnpm deploy --filter=bot --prod /prod/bot
 FROM base AS gateway
 COPY --from=build /prod/gateway /prod/gateway
 WORKDIR /prod/gateway
+RUN corepack install
 CMD [ "pnpm", "--silent", "start" ]
 
 FROM base AS bot
 COPY --from=build /prod/bot /prod/bot
 WORKDIR /prod/bot
+RUN corepack install
 CMD [ "pnpm", "--silent", "start" ]

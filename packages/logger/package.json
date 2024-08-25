@@ -1,5 +1,5 @@
 {
-    "name": "gateway",
+    "name": "log",
     "version": "1.0.0",
     "main": "dist/index.js",
     "type": "module",
@@ -9,12 +9,8 @@
     },
     "license": "GPL-3.0",
     "dependencies": {
-        "@discordjs/rest": "^2.3.0",
-        "@discordjs/ws": "^1.1.1",
-        "bufferutil": "^4.0.8",
-        "core": "workspace:*",
-        "discord-api-types": "^0.37.97",
-        "log": "workspace:*"
+        "chalk": "^5.3.0",
+        "core": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^22.5.0"
