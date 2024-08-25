@@ -1,0 +1,11 @@
+{
+  "name": "snip-stash-bot",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "pnpm build && node dist/index.js"
+  },
+  "license": "GPL-3.0"
+}
