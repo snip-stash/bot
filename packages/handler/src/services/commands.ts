@@ -64,6 +64,5 @@ export async function deployCommands(commands: Map<string, Command>) {
         }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
-        logger.error(JSON.stringify(error), "Commands");
     }
 }
