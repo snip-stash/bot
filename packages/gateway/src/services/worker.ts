@@ -13,6 +13,10 @@ const broker = new PubSubRedisBroker({ redisClient: redis });
 const workerId = calculateWorkerId(workerData.shardIds, env.SHARDS_PER_WORKER);
 logger.info("Starting...", `Worker ${workerId}`, { shardIds: workerData.shardIds });
 
+if (workerId === 0) {
+    await broker.publish("deploy", null);
+}
+
 void bootstrapper.bootstrap({
     forwardEvents: [
         WebSocketShardEvents.Closed,
