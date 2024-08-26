@@ -23,7 +23,7 @@ Feel free to discard them if you want
 */
 
 client.on(GatewayDispatchEvents.MessageCreate, async ({ data: message }) => {
-    logger.info(`Received message : ${message.content}`, "Gateway");
+    logger.infoSingle(`Received message : ${message.content}`, "Gateway");
 });
 
 client.on(GatewayDispatchEvents.Ready, () => {
