@@ -21,8 +21,9 @@ Feel free to discard them if you want
 - Tom
 
 */
-client.on(GatewayDispatchEvents.MessageCreate, async (message) => {
-    logger.info(`Received message : ${message.data.id}`, "Gateway");
+
+client.on(GatewayDispatchEvents.MessageCreate, async ({ data: message }) => {
+    logger.infoSingle(`Received message : ${message.content}`, "Gateway");
 });
 
 client.on(GatewayDispatchEvents.Ready, () => {

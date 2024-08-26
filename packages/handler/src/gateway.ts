@@ -3,6 +3,9 @@ import { PubSubRedisBroker } from "@discordjs/brokers";
 import type { Environment } from "core/dist/env.js";
 import type { GatewayDispatchPayload, GatewaySendPayload } from "discord-api-types/v10";
 import type { Redis } from "ioredis";
+import { Logger } from "log";
+
+const logger = new Logger();
 
 type eventPayload = {
     data: { data: GatewayDispatchPayload };
@@ -27,6 +30,10 @@ export class Gateway extends EventEmitter {
         this.pubSubBroker.on("dispatch", ({ data, ack }: eventPayload) => {
             this.emit("dispatch", data);
             void ack();
+        });
+
+        this.pubSubBroker.on("error", (error) => {
+            logger.error(error, "pubSubBroker");
         });
     }
 
