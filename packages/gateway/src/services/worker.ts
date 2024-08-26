@@ -25,7 +25,7 @@ void bootstrapper.bootstrap({
         shard.on(WebSocketShardEvents.Dispatch, async (event) => {
             await broker.publish("dispatch", {
                 shardId: shard.id,
-                event: event.data,
+                data: event.data,
             });
 
             logger.debugSingle(`Shard ${shard.id} received event ${event.data.t}`, "Gateway");
