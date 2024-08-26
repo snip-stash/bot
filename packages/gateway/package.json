@@ -9,11 +9,13 @@
     },
     "license": "GPL-3.0",
     "dependencies": {
+        "@discordjs/brokers": "^0.3.0",
         "@discordjs/rest": "^2.3.0",
         "@discordjs/ws": "^1.1.1",
         "bufferutil": "^4.0.8",
         "core": "workspace:*",
         "discord-api-types": "^0.37.97",
+        "ioredis": "^5.4.1",
         "log": "workspace:*"
     },
     "devDependencies": {
