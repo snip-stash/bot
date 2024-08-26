@@ -4,6 +4,8 @@ import type { Environment } from "core/dist/env.js";
 import type { GatewayDispatchPayload, GatewaySendPayload } from "discord-api-types/v10";
 import type { Redis } from "ioredis";
 import { Logger } from "log";
+import { commands } from "./index.js";
+import { deployCommands } from "./services/commands.js";
 
 const logger = new Logger();
 
@@ -32,8 +34,19 @@ export class Gateway extends EventEmitter {
             void ack();
         });
 
-        this.pubSubBroker.on("error", (error) => {
-            logger.error(error, "pubSubBroker");
+        this.pubSubBroker.on("deploy", async ({ ack }: eventPayload) => {
+            logger.info("Deploying commands", "Gateway");
+            try {
+                await deployCommands(commands);
+                logger.info("Commands deployed successfully", "Gateway");
+            } catch (error: any) {
+                logger.error("Error deploying commands", "Gateway", error);
+            }
+            void ack();
+        });
+
+        this.pubSubBroker.on("error", (error: any) => {
+            logger.error("PubSubBroker error:", "Gateway", error);
         });
     }
 
