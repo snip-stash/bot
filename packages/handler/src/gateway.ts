@@ -28,6 +28,10 @@ export class Gateway extends EventEmitter {
             this.emit("dispatch", data);
             void ack();
         });
+
+        this.pubSubBroker.on("error", (error) => {
+            console.error("PubSubRedisBroker error:", error);
+        });
     }
 
     async connect(): Promise<void> {
