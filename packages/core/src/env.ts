@@ -3,6 +3,7 @@ import { z } from "zod";
 export const envSchema = z.object({
     DISCORD_TOKEN: z.string(),
     DISCORD_APPLICATION_ID: z.string(),
+    DISCORD_TEST_GUILD_ID: z.string().optional(),
     REDIS_HOST: z.string().default("localhost"),
     REDIS_PORT: z.coerce.number().default(6379),
     REDIS_PASSWORD: z.string().default(""),

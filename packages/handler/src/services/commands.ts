@@ -12,7 +12,7 @@ export interface Command {
     execute: (interaction: APIInteraction, api: API) => void;
 }
 
-const rest = new REST({ version: "v10" }).setToken(env.DISCORD_TOKEN);
+const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
 const logger = new Logger();
 
 export async function loadCommands(): Promise<Map<string, Command>> {
@@ -46,12 +46,24 @@ export async function deployCommands(commands: Map<string, Command>) {
     logger.info("Started deploying application (/) commands.", "Commands");
 
     try {
-        await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, "1277093178176180276"), {
+        await rest.put(Routes.applicationCommands(env.DISCORD_APPLICATION_ID), {
             body: Array.from(commands.values()).map((command) => command.data.toJSON()),
         });
 
         logger.info("Successfully deployed global application (/) commands.", "Commands");
+
+        if (env.DISCORD_TEST_GUILD_ID) {
+            await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, env.DISCORD_TEST_GUILD_ID), {
+                body: Array.from(commands.values()).map((command) => {
+                    command.data.setDescription(`GUILD VERSION - ${command.data.description}`);
+                    return command.data.toJSON();
+                }),
+            });
+
+            logger.info("Successfully deployed guild application (/) commands.", "Commands");
+        }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
+        logger.error(JSON.stringify(error), "Commands");
     }
 }

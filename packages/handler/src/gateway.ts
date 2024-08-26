@@ -35,13 +35,7 @@ export class Gateway extends EventEmitter {
         });
 
         this.pubSubBroker.on("deploy", async ({ ack }: eventPayload) => {
-            logger.info("Deploying commands", "Gateway");
-            try {
-                await deployCommands(commands);
-                logger.info("Commands deployed successfully", "Gateway");
-            } catch (error: any) {
-                logger.error("Error deploying commands", "Gateway", error);
-            }
+            await deployCommands(commands);
             void ack();
         });
 
@@ -51,7 +45,7 @@ export class Gateway extends EventEmitter {
     }
 
     async connect(): Promise<void> {
-        await this.pubSubBroker.subscribe("handler", ["dispatch"]);
+        await this.pubSubBroker.subscribe("handler", ["dispatch", "deploy"]);
     }
 
     send = (_shardID: number, _payload: GatewaySendPayload): void => {};
