@@ -1,12 +1,12 @@
 services:
-  # bot:
-  #   build:
-  #     context: .
-  #     target: bot
-  #   restart: unless-stopped
-  #   tty: true
-  #   env_file:
-  #     - .env
+  handler:
+    build:
+      context: .
+      target: handler
+    restart: unless-stopped
+    tty: true
+    env_file:
+      - .env
   gateway:
     build:
       context: .

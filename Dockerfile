@@ -11,7 +11,7 @@ WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
 RUN pnpm deploy --filter=gateway --prod /prod/gateway
-RUN pnpm deploy --filter=bot --prod /prod/bot
+RUN pnpm deploy --filter=handler --prod /prod/handler
 
 FROM base AS gateway
 COPY --from=build /prod/gateway /prod/gateway
@@ -19,8 +19,8 @@ WORKDIR /prod/gateway
 RUN corepack install
 CMD [ "pnpm", "--silent", "start" ]
 
-FROM base AS bot
-COPY --from=build /prod/bot /prod/bot
-WORKDIR /prod/bot
+FROM base AS handler
+COPY --from=build /prod/handler /prod/handler
+WORKDIR /prod/handler
 RUN corepack install
 CMD [ "pnpm", "--silent", "start" ]
