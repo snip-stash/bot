@@ -1,7 +1,11 @@
 import { readdir } from "node:fs/promises";
 import { URL } from "node:url";
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
-import type { API, APIInteraction } from "@discordjs/core";
+import type {
+    API,
+    APIChatInputApplicationCommandGuildInteraction,
+    APIChatInputApplicationCommandInteraction,
+} from "@discordjs/core";
 import { REST } from "@discordjs/rest";
 import { env } from "core";
 import { Routes } from "discord-api-types/v10";
@@ -9,7 +13,10 @@ import { Logger } from "log";
 
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
-    execute: (interaction: APIInteraction, api: API) => void;
+    execute: (
+        interaction: APIChatInputApplicationCommandInteraction | APIChatInputApplicationCommandGuildInteraction,
+        api: API,
+    ) => void;
 }
 
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);

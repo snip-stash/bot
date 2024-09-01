@@ -1,5 +1,5 @@
 {
-    "name": "core",
+    "name": "database",
     "version": "1.0.0",
     "main": "dist/index.js",
     "type": "module",
@@ -9,9 +9,9 @@
     },
     "license": "GPL-3.0",
     "dependencies": {
-        "ioredis": "^5.4.1",
         "pg": "^8.12.0",
-        "zod": "^3.23.8"
+        "core": "workspace:*",
+        "log": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^22.5.0",
