@@ -1,7 +1,10 @@
 import { readdir } from "node:fs/promises";
 import { URL } from "node:url";
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
-import type { API, APIInteraction } from "@discordjs/core";
+import type {
+    API,
+    APIChatInputApplicationCommandInteraction,
+} from "@discordjs/core";
 import { REST } from "@discordjs/rest";
 import { env } from "core";
 import { Routes } from "discord-api-types/v10";
@@ -9,14 +12,17 @@ import { Logger } from "log";
 
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
-    execute: (interaction: APIInteraction, api: API) => void;
+    execute: (
+        interaction: APIChatInputApplicationCommandInteraction,
+        api: API,
+    ) => void;
 }
 
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
 const logger = new Logger();
 
 export async function loadCommands(): Promise<Map<string, Command>> {
-    logger.info("Started loading application (/) commands.", "Commands");
+    logger.infoSingle("Started loading application (/) commands.", "Commands");
 
     const commands = new Map<string, Command>();
     const allFiles = await readdir(new URL("../commands/", import.meta.url));
@@ -37,7 +43,7 @@ export async function loadCommands(): Promise<Map<string, Command>> {
         }
     }
 
-    logger.info("Finished loading application (/) commands.", "Commands");
+    logger.infoSingle("Finished loading application (/) commands.", "Commands");
 
     return commands;
 }
@@ -50,7 +56,7 @@ export async function deployCommands(commands: Map<string, Command>) {
             body: Array.from(commands.values()).map((command) => command.data.toJSON()),
         });
 
-        logger.info("Successfully deployed global application (/) commands.", "Commands");
+        logger.infoSingle("Successfully deployed global application (/) commands.", "Commands");
 
         if (env.DISCORD_TEST_GUILD_ID) {
             await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, env.DISCORD_TEST_GUILD_ID), {
@@ -60,7 +66,7 @@ export async function deployCommands(commands: Map<string, Command>) {
                 }),
             });
 
-            logger.info("Successfully deployed guild application (/) commands.", "Commands");
+            logger.infoSingle("Successfully deployed guild application (/) commands.", "Commands");
         }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);

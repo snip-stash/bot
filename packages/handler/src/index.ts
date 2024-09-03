@@ -1,4 +1,11 @@
-import { Client, GatewayDispatchEvents, InteractionType } from "@discordjs/core";
+import {
+    ApplicationCommandType,
+    Client,
+    GatewayDispatchEvents,
+    InteractionType,
+    type APIChatInputApplicationCommandInteraction,
+} from "@discordjs/core";
+
 import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
@@ -7,15 +14,20 @@ import { Gateway } from "./gateway.js";
 import { loadCommands } from "./services/commands.js";
 
 const logger = new Logger();
-
 export const commands = await loadCommands();
 const redis = await getRedis();
 const rest = new REST().setToken(env.DISCORD_TOKEN);
 const gateway = new Gateway({ redis, env });
-
 await gateway.connect();
 
 const client = new Client({ rest, gateway });
+
+function isChatInput(interaction: any ): interaction is APIChatInputApplicationCommandInteraction {
+    return (
+        interaction.type === InteractionType.ApplicationCommand &&
+        interaction.data.type === ApplicationCommandType.ChatInput
+    );
+}
 
 client.on(GatewayDispatchEvents.MessageCreate, async ({ data: message }) => {
     logger.infoSingle(`Received message: ${message.content}`, "Handler");
@@ -30,7 +42,7 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 });
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
-    if (interaction.type !== InteractionType.ApplicationCommand) return;
+    if (!isChatInput(interaction)) return;
 
     const command = commands.get(interaction.data.name);
 
