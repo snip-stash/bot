@@ -22,7 +22,7 @@ export async function connectSQL() {
     });
 
     pool.on("connect", () => {
-        logger.infoSingle("Connected to PostgreSQL as pool", "PostgreSQL");
+        logger.infoSingle("Connected to pool", "PostgreSQL");
     });
 
     pool.on("acquire", () => {
@@ -53,7 +53,7 @@ async function onCreate(pool: pg.Pool) {
                 discord_id BIGINT PRIMARY KEY,
                 premium BOOLEAN NOT NULL,
                 posts INT NOT NULL,
-                runs_left SMALLINT NOT NULL
+                runs_left SMALLINT NOT NULLs
             )
         `);
     } catch (err: any) {
@@ -61,5 +61,4 @@ async function onCreate(pool: pg.Pool) {
     } finally {
         client.release();
     }
-}
-    */
+}   */

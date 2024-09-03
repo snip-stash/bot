@@ -1,10 +1,11 @@
 import {
-    type APIChatInputApplicationCommandInteraction,
     ApplicationCommandType,
     Client,
     GatewayDispatchEvents,
     InteractionType,
+    type APIChatInputApplicationCommandInteraction,
 } from "@discordjs/core";
+
 import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
@@ -21,6 +22,13 @@ await gateway.connect();
 
 const client = new Client({ rest, gateway });
 
+function isChatInput(interaction: any ): interaction is APIChatInputApplicationCommandInteraction {
+    return (
+        interaction.type === InteractionType.ApplicationCommand &&
+        interaction.data.type === ApplicationCommandType.ChatInput
+    );
+}
+
 client.on(GatewayDispatchEvents.MessageCreate, async ({ data: message }) => {
     logger.infoSingle(`Received message: ${message.content}`, "Handler");
 });
@@ -34,11 +42,7 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 });
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
-    if (
-        interaction.type !== InteractionType.ApplicationCommand ||
-        interaction.data.type !== ApplicationCommandType.ChatInput
-    )
-        return;
+    if (!isChatInput(interaction)) return;
 
     const command = commands.get(interaction.data.name);
 
@@ -46,7 +50,7 @@ client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, a
 
     try {
         logger.infoSingle(`Executing command: ${command.data.name}`, "Handler");
-        command.execute(interaction as APIChatInputApplicationCommandInteraction, api);
+        command.execute(interaction, api);
     } catch (error: any) {
         logger.error("Command execution error:", "Handler", error);
     }
