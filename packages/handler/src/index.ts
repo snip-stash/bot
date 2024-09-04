@@ -1,9 +1,9 @@
 import {
+    type APIChatInputApplicationCommandInteraction,
     ApplicationCommandType,
     Client,
     GatewayDispatchEvents,
     InteractionType,
-    type APIChatInputApplicationCommandInteraction,
 } from "@discordjs/core";
 
 import { REST } from "@discordjs/rest";
@@ -22,7 +22,7 @@ await gateway.connect();
 
 const client = new Client({ rest, gateway });
 
-function isChatInput(interaction: any ): interaction is APIChatInputApplicationCommandInteraction {
+function isChatInput(interaction: any): interaction is APIChatInputApplicationCommandInteraction {
     return (
         interaction.type === InteractionType.ApplicationCommand &&
         interaction.data.type === ApplicationCommandType.ChatInput
@@ -43,7 +43,6 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
     if (!isChatInput(interaction)) return;
-
     const command = commands.get(interaction.data.name);
 
     if (!command) return;

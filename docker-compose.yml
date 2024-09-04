@@ -23,6 +23,16 @@ services:
     volumes:
       - cache-data:/data
       - ./config/cache/keydb.conf:/etc/keydb/keydb.conf
+  database:
+    container_name: database
+    image: postgres:alpine
+    restart: unless-stopped
+    tty: true
+    env_file:
+      - .env
+    volumes:
+      - database-data:/var/lib/postgresql/data
 
 volumes:
   cache-data:
+  database-data:
