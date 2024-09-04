@@ -10,6 +10,8 @@ export const command: Command = {
         ),
 
     async execute(interaction, api): Promise<void> {
-        await api.interactions.reply(interaction.id, interaction.token, { content: "Totally awesome help menu" });
+        await api.interactions.reply(interaction.id, interaction.token, {
+            content: "Totally awesome help menu",
+        });
     },
 };

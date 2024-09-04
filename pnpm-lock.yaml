@@ -48,12 +48,6 @@ importers:
       '@types/node':
         specifier: ^22.5.0
         version: 22.5.0
-      '@types/pg':
-        specifier: ^8.11.8
-        version: 8.11.8
-      add:
-        specifier: ^2.0.6
-        version: 2.0.6
 
   packages/database:
     dependencies:
@@ -73,9 +67,6 @@ importers:
       '@types/pg':
         specifier: ^8.11.8
         version: 8.11.8
-      add:
-        specifier: ^2.0.6
-        version: 2.0.6
 
   packages/gateway:
     dependencies:
@@ -279,9 +270,6 @@ packages:
   '@vladfrangu/async_event_emitter@2.4.6':
     resolution: {integrity: sha512-RaI5qZo6D2CVS6sTHFKg1v5Ohq/+Bo2LZ5gzUEwZ/WkHhwtGTCB/sVLw8ijOkAUxasZ+WshN/Rzj4ywsABJ5ZA==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
-
-  add@2.0.6:
-    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
 
   bufferutil@4.0.8:
     resolution: {integrity: sha512-4T53u4PdgsXqKaIctwF8ifXlRTTmEPJ8iEPWFdGZvcf7sbwYo6FKFEX9eNNAnzFZ7EzJAQ3CJeOtCRA4rDp7Pw==}
@@ -656,8 +644,6 @@ snapshots:
       '@types/node': 22.5.0
 
   '@vladfrangu/async_event_emitter@2.4.6': {}
-
-  add@2.0.6: {}
 
   bufferutil@4.0.8:
     dependencies:
