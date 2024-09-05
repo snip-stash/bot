@@ -1,10 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { connectPrisma } from "database";
+import prisma from "database";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import type { Command } from "../services/commands.js";
 import { getCommandOption } from "../services/commands.js";
-
-const prisma = connectPrisma();
 
 export const command: Command = {
     data: new SlashCommandBuilder()

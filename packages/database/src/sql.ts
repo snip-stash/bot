@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { Logger } from "log";
+import { PrismaClient } from "../prisma/generated/client/default.js";
 
 const logger = new Logger();
 
@@ -26,19 +26,19 @@ export async function connectPrisma() {
     });
 
     prisma.$on("query", (e: any) => {
-        logger.info(`Query: ${e.query}`, "Prisma");
+        logger.info("Query", "Prisma", e.message);
     });
 
     prisma.$on("info", (e: any) => {
-        logger.info(`Info: ${e.message}`, "Prisma");
+        logger.info("Info", "Prisma", e.message);
     });
 
     prisma.$on("warn", (e: any) => {
-        logger.warn(`Warn: ${e.message}`, "Prisma");
+        logger.warn("Warn", "Prisma", e.message);
     });
 
     prisma.$on("error", (e: any) => {
-        logger.error(`Error: ${e.message}`, "Prisma");
+        logger.error("Error", "Prisma", e.message);
     });
 
     prisma.$connect();
