@@ -7,9 +7,9 @@ export const envSchema = z.object({
     POSTGRES_URL: z.string().optional(),
     POSTGRES_HOST: z.string().default("localhost"),
     POSTGRES_PORT: z.coerce.number().default(5432),
-    POSTGRES_DATABASE: z.string(),
-    POSTGRES_USERNAME: z.string(),
-    POSTGRES_PASSWORD: z.string(),
+    POSTGRES_DATABASE: z.string().default("bot"),
+    POSTGRES_USERNAME: z.string().default("admin"),
+    POSTGRES_PASSWORD: z.string().default("root"),
     REDIS_HOST: z.string().default("localhost"),
     REDIS_PORT: z.coerce.number().default(6379),
     REDIS_PASSWORD: z.string().default(""),
@@ -17,6 +17,7 @@ export const envSchema = z.object({
     SHARD_COUNT: z.coerce.number(),
     SHARDS_PER_WORKER: z.coerce.number(),
     LOG_LEVEL: z.coerce.number().default(3),
+    DATABASE_SEEDING: z.coerce.boolean().default(false),
 });
 
 export type Environment = z.infer<typeof envSchema>;

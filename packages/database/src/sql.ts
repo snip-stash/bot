@@ -1,23 +1,21 @@
 import { env } from "core";
 import { Logger } from "log";
 import pg from "pg";
+import { createSchemas } from "./sqlSetup.js";
 
 const { Pool } = pg;
 const logger = new Logger();
 
 export async function connectSQL() {
     const pool = env.POSTGRES_URL
-        ? new Pool({ connectionString: env.POSTGRES_URL, ssl: { rejectUnauthorized: false } })
+        ? new Pool({ connectionString: env.POSTGRES_URL, ssl: false })
         : new Pool({
               user: env.POSTGRES_USERNAME,
               host: env.POSTGRES_HOST,
               database: env.POSTGRES_DATABASE,
               password: env.POSTGRES_PASSWORD,
               port: env.POSTGRES_PORT,
-              ssl: {
-                  rejectUnauthorized: false,
-                  // SSL error if you enable this. We will have to create our own CA and sign it.
-              },
+              ssl: false,
           });
 
     pool.on("error", (err: any) => {
@@ -42,26 +40,7 @@ export async function connectSQL() {
 
     pool.connect();
 
-    //await onCreate(pool);
+    await createSchemas(pool);
 
     return pool;
 }
-
-/*
-async function onCreate(pool: pg.Pool) {
-    const client = await pool.connect();
-    try {
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS bot.tbl_user (
-                discord_id BIGINT PRIMARY KEY,
-                premium BOOLEAN NOT NULL,
-                posts INT NOT NULL,
-                runs_left SMALLINT NOT NULLs
-            )
-        `);
-    } catch (err: any) {
-        logger.error("Error creating table", "PostgreSQL", err);
-    } finally {
-        client.release();
-    }
-}   */
