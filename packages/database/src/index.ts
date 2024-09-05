@@ -1,1 +1,2 @@
-export { connectSQL } from "./sql.js";
+export { connectPrisma } from "./sql.js";
+export { seedPrisma } from "./sqlSetup.js";

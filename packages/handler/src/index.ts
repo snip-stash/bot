@@ -9,6 +9,7 @@ import {
 import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
+import { seedPrisma } from "database";
 import { Logger } from "log";
 import { Gateway } from "./gateway.js";
 import { loadCommands } from "./services/commands.js";
@@ -54,3 +55,5 @@ client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, a
         logger.error("Command execution error:", "Handler", error);
     }
 });
+
+await seedPrisma();

@@ -1,46 +1,47 @@
-import { env } from "core";
+import { PrismaClient } from "@prisma/client";
 import { Logger } from "log";
-import pg from "pg";
-import { createSchemas } from "./sqlSetup.js";
 
-const { Pool } = pg;
 const logger = new Logger();
 
-export async function connectSQL() {
-    const pool = env.POSTGRES_URL
-        ? new Pool({ connectionString: env.POSTGRES_URL, ssl: false })
-        : new Pool({
-              user: env.POSTGRES_USERNAME,
-              host: env.POSTGRES_HOST,
-              database: env.POSTGRES_DATABASE,
-              password: env.POSTGRES_PASSWORD,
-              port: env.POSTGRES_PORT,
-              ssl: false,
-          });
-
-    pool.on("error", (err: any) => {
-        logger.error("Unexpected error on idle client", "PostgreSQL", err);
+export async function connectPrisma() {
+    const prisma = new PrismaClient({
+        log: [
+            {
+                emit: "event",
+                level: "query",
+            },
+            {
+                emit: "event",
+                level: "info",
+            },
+            {
+                emit: "event",
+                level: "warn",
+            },
+            {
+                emit: "event",
+                level: "error",
+            },
+        ],
     });
 
-    pool.on("connect", () => {
-        logger.infoSingle("Connected to pool", "PostgreSQL");
+    prisma.$on("query", (e: any) => {
+        logger.info(`Query: ${e.query}`, "Prisma");
     });
 
-    pool.on("acquire", () => {
-        logger.infoSingle("Acquiring client from pool", "PostgreSQL");
+    prisma.$on("info", (e: any) => {
+        logger.info(`Info: ${e.message}`, "Prisma");
     });
 
-    pool.on("remove", () => {
-        logger.infoSingle("Removing client from pool", "PostgreSQL");
+    prisma.$on("warn", (e: any) => {
+        logger.warn(`Warn: ${e.message}`, "Prisma");
     });
 
-    pool.on("release", () => {
-        logger.infoSingle("Releasing client back to pool", "PostgreSQL");
+    prisma.$on("error", (e: any) => {
+        logger.error(`Error: ${e.message}`, "Prisma");
     });
 
-    pool.connect();
+    prisma.$connect();
 
-    await createSchemas(pool);
-
-    return pool;
+    return prisma;
 }

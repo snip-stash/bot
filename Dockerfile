@@ -9,6 +9,7 @@ FROM base AS build
 COPY . /app
 WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpx prisma generate --schema=/app/packages/database/prisma/schema.prisma
 RUN pnpm run -r build
 RUN pnpm deploy --filter=gateway --prod /prod/gateway
 RUN pnpm deploy --filter=handler --prod /prod/handler
