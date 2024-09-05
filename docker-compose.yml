@@ -33,9 +33,9 @@ services:
     ports:
       - "5432:5432" # Expose the port to the host | Only if you want to access the database from the host
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=bot
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
     volumes:
       - database-data:/var/lib/postgresql/data
 
