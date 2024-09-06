@@ -14,10 +14,10 @@
         "@discordjs/core": "^1.2.0",
         "@discordjs/rest": "^2.3.0",
         "core": "workspace:*",
+        "database": "workspace:*",
         "discord-api-types": "^0.37.97",
         "ioredis": "^5.4.1",
         "log": "workspace:*",
-        "database": "workspace:*",
         "zod": "^3.23.8"
     },
     "devDependencies": {

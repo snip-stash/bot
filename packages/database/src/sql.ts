@@ -1,67 +1,47 @@
-import { env } from "core";
 import { Logger } from "log";
-import pg from "pg";
+import { PrismaClient } from "../prisma/gen/client/default.js";
 
-const { Pool } = pg;
 const logger = new Logger();
 
-export async function connectSQL() {
-    const pool = env.POSTGRES_URL
-        ? new Pool({ connectionString: env.POSTGRES_URL, ssl: { rejectUnauthorized: false } })
-        : new Pool({
-              user: env.POSTGRES_USERNAME,
-              host: env.POSTGRES_HOST,
-              database: env.POSTGRES_DATABASE,
-              password: env.POSTGRES_PASSWORD,
-              port: env.POSTGRES_PORT,
-              ssl: {
-                  rejectUnauthorized: false,
-                  // SSL error if you enable this. We will have to create our own CA and sign it.
-              },
-          });
-
-    pool.on("error", (err: any) => {
-        logger.error("Unexpected error on idle client", "PostgreSQL", err);
+export async function connectPrisma() {
+    const prisma = new PrismaClient({
+        log: [
+            {
+                emit: "event",
+                level: "query",
+            },
+            {
+                emit: "event",
+                level: "info",
+            },
+            {
+                emit: "event",
+                level: "warn",
+            },
+            {
+                emit: "event",
+                level: "error",
+            },
+        ],
     });
 
-    pool.on("connect", () => {
-        logger.infoSingle("Connected to pool", "PostgreSQL");
+    prisma.$on("query", (e: any) => {
+        logger.info("Query", "Prisma", e.message);
     });
 
-    pool.on("acquire", () => {
-        logger.infoSingle("Acquiring client from pool", "PostgreSQL");
+    prisma.$on("info", (e: any) => {
+        logger.info("Info", "Prisma", e.message);
     });
 
-    pool.on("remove", () => {
-        logger.infoSingle("Removing client from pool", "PostgreSQL");
+    prisma.$on("warn", (e: any) => {
+        logger.warn("Warn", "Prisma", e.message);
     });
 
-    pool.on("release", () => {
-        logger.infoSingle("Releasing client back to pool", "PostgreSQL");
+    prisma.$on("error", (e: any) => {
+        logger.error("Error", "Prisma", e.message);
     });
 
-    pool.connect();
+    prisma.$connect();
 
-    //await onCreate(pool);
-
-    return pool;
+    return prisma;
 }
-
-/*
-async function onCreate(pool: pg.Pool) {
-    const client = await pool.connect();
-    try {
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS bot.tbl_user (
-                discord_id BIGINT PRIMARY KEY,
-                premium BOOLEAN NOT NULL,
-                posts INT NOT NULL,
-                runs_left SMALLINT NOT NULLs
-            )
-        `);
-    } catch (err: any) {
-        logger.error("Error creating table", "PostgreSQL", err);
-    } finally {
-        client.release();
-    }
-}   */
