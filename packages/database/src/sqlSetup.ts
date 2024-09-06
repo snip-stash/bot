@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { Logger } from "log";
+import { PrismaClient } from "../prisma/gen/client/default.js";
 
 const logger = new Logger();
 
@@ -125,7 +125,7 @@ export async function seedPrisma() {
             skipDuplicates: true,
         });
 
-        logger.info("Seeding complete", "Prisma");
+        logger.infoSingle("Seeding complete", "Prisma");
     } catch (err: any) {
         logger.error(`Error seeding database: ${err.message}`, "Prisma");
     } finally {

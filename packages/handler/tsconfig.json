@@ -3,8 +3,5 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist"
-    },
-    "paths": {
-        "*": ["node_modules/*"]
     }
 }

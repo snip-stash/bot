@@ -7,13 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@prisma/client':
-        specifier: ^5.19.1
-        version: 5.19.1(prisma@5.19.1)
-      prisma:
-        specifier: ^5.19.1
-        version: 5.19.1
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.8.3
@@ -58,6 +51,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@prisma/client':
+        specifier: 5.19.1
+        version: 5.19.1(prisma@5.19.1)
       core:
         specifier: workspace:*
         version: link:../core
