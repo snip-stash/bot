@@ -26,19 +26,24 @@ export async function connectPrisma() {
     });
 
     prisma.$on("query", (e: any) => {
-        logger.info("Query", "Prisma", e.message);
+        logger.info("Query", "Prisma", {
+            query: e.query,
+            params: e.params,
+            duration: `${e.duration}ms`,
+            timestamp: e.timestamp,
+        });
     });
 
     prisma.$on("info", (e: any) => {
-        logger.info("Info", "Prisma", e.message);
+        logger.info("Info", "Prisma", { message: e.message, target: e.target, timestamp: e.timestamp });
     });
 
     prisma.$on("warn", (e: any) => {
-        logger.warn("Warn", "Prisma", e.message);
+        logger.info("Warn", "Prisma", { message: e.message, target: e.target, timestamp: e.timestamp });
     });
 
     prisma.$on("error", (e: any) => {
-        logger.error("Error", "Prisma", e.message);
+        logger.info("Error", "Prisma", { message: e.message, target: e.target, timestamp: e.timestamp });
     });
 
     prisma.$connect();
