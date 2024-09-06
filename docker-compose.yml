@@ -3,7 +3,6 @@ services:
     build:
       context: .
       target: handler
-
     restart: unless-stopped
     tty: true
     env_file:
@@ -39,7 +38,8 @@ services:
     env_file:
       - .env
     ports:
-      - "5432:5432" # Expose the port to the host | Only if you want to access the database from the host
+      # Expose the port to the host | Only if you want to access the database from the host
+      - "5432:5432"
     volumes:
       - database-data:/var/lib/postgresql/data
 

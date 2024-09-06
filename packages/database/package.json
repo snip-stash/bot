@@ -5,15 +5,10 @@
     "type": "module",
     "scripts": {
         "build": "tsc",
-        "start": "node dist/index.js",
-        "generate": "pnpx prisma generate",
-        "migrate": "pnpx prisma migrate",
-        "push": "pnpx prisma db push --skip-generate",
-        "seed": "pnpx prisma db seed"
+        "start": "node dist/index.js"
     },
     "license": "GPL-3.0",
     "dependencies": {
-        "@prisma/client": "^5.19.1",
         "core": "workspace:*",
         "log": "workspace:*"
     },

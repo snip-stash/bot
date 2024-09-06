@@ -58,9 +58,6 @@ importers:
 
   packages/database:
     dependencies:
-      '@prisma/client':
-        specifier: ^5.19.1
-        version: 5.19.1(prisma@5.19.1)
       core:
         specifier: workspace:*
         version: link:../core
