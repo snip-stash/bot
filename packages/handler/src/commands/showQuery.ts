@@ -6,23 +6,26 @@ import { getCommandOption } from "../services/commands.js";
 
 export const command: Command = {
     data: new SlashCommandBuilder()
-        .setName("testdb")
+        .setName("showquery")
         .setDescription("Grab a result from prisma")
-        .addStringOption((option) =>
-            option.setName("language").setDescription("The language to grab from").setRequired(true),
+        .addNumberOption((option) =>
+            option
+                .setName("language")
+                .setDescription("The language of the snippet to grab")
+                .setRequired(true)
+                .addChoices({ name: "JavaScript", value: 1 }, { name: "Python", value: 2 }, { name: "Java", value: 3 }),
         ),
 
     async execute(interaction, api): Promise<void> {
-        const grabOption = getCommandOption("language", ApplicationCommandOptionType.String, interaction.data.options);
+        const idOption = getCommandOption("language", ApplicationCommandOptionType.Number, interaction.data.options);
 
-        if (!grabOption) return;
+        if (!idOption) return;
 
         const getCode = await (await prisma).snippet.findUnique({
-            where: { snippet_id: 1, snippet_lang: grabOption },
+            where: { snippet_id: idOption },
         });
 
         const snippetCode = getCode?.snippet_code || "Invalid language";
-
         await api.interactions.reply(interaction.id, interaction.token, { content: snippetCode });
     },
 };

@@ -5,7 +5,8 @@
     "scripts": {
         "check": "biome check . --fix",
         "check-unsafe": "biome check . --fix --unsafe",
-        "build": "pnpm run -r build"
+        "build": "pnpm run -r build",
+        "all": "pnpm check && pnpm install && pnpm build"
     },
     "license": "GPL-3.0",
     "devDependencies": {
