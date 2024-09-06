@@ -125,14 +125,20 @@ export async function loadCommands(): Promise<Map<string, Command>> {
 }
 
 export async function deployCommands(commands: Map<string, Command>) {
-    logger.infoSingle("Started deploying application (/) commands.", "Commands");
+    logger.info("Started deploying application (/) commands.", "Commands", {
+        commands: Array.from(commands.keys()),
+        count: commands.size,
+    });
 
     try {
         await rest.put(Routes.applicationCommands(env.DISCORD_APPLICATION_ID), {
             body: Array.from(commands.values()).map((command) => command.data.toJSON()),
         });
 
-        logger.infoSingle("Successfully deployed global application (/) commands.", "Commands");
+        logger.info("Successfully deployed global application (/) commands.", "Commands", {
+            commands: Array.from(commands.keys()),
+            count: commands.size,
+        });
 
         if (env.DISCORD_TEST_GUILD_ID) {
             await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, env.DISCORD_TEST_GUILD_ID), {
@@ -142,7 +148,10 @@ export async function deployCommands(commands: Map<string, Command>) {
                 }),
             });
 
-            logger.infoSingle("Successfully deployed guild application (/) commands.", "Commands");
+            logger.info("Successfully deployed guild application (/) commands.", "Commands", {
+                commands: Array.from(commands.keys()),
+                count: commands.size,
+            });
         }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
