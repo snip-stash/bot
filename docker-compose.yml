@@ -8,7 +8,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - database
+      cache:
+        condition: service_started
+      database-setup:
+        condition: service_completed_successfully
 
   gateway:
     build:
@@ -19,7 +22,22 @@ services:
     env_file:
       - .env
     depends_on:
-      - database
+      cache:
+        condition: service_started
+      database-setup:
+        condition: service_completed_successfully
+
+  database-setup:
+    build:
+      context: .
+      target: database-setup
+    restart: "no"
+    tty: true
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_started
 
   cache:
     container_name: cache
@@ -38,7 +56,6 @@ services:
     env_file:
       - .env
     ports:
-      # Expose the port to the host | Only if you want to access the database from the host
       - "5432:5432"
     volumes:
       - database-data:/var/lib/postgresql/data
