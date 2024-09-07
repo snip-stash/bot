@@ -1,4 +1,4 @@
-import { EmbedBuilder, SlashCommandBuilder } from "@discordjs/builders";
+import { EmbedBuilder, SlashCommandBuilder, bold, inlineCode } from "@discordjs/builders";
 import { loadCommands } from "../services/commands.js";
 import type { Command } from "../services/commands.js";
 
@@ -6,10 +6,16 @@ export const command: Command = {
     data: new SlashCommandBuilder().setName("help").setDescription("View a list of commands from the bot"),
     async execute(interaction, api): Promise<void> {
         const commands = await loadCommands();
+        const maxLength = Math.max(...Array.from(commands.values()).map((command) => command.data.name.length)) + 2;
 
-        const embed = new EmbedBuilder().setColor(0x0099ff).setDescription(
-            `**All Commands**\n\n${Array.from(commands.values())
-                .map((command) => `**${command.data.name}** - ${command.data.description}`)
+        const paddedHeader = "Commands".padStart((maxLength + "Commands".length) / 2).padEnd(maxLength);
+
+        const embed = new EmbedBuilder().setColor(0x2f3136).setDescription(
+            `${bold(inlineCode(paddedHeader))}\n\n${Array.from(commands.values())
+                .map((command) => {
+                    const paddedName = command.data.name.padEnd(maxLength);
+                    return `${inlineCode(paddedName)} ${command.data.description}`;
+                })
                 .join("\n")}`,
         );
 
