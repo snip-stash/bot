@@ -13,11 +13,11 @@
     },
     "license": "GPL-3.0",
     "dependencies": {
-        "@prisma/client": "5.19.1",
         "core": "workspace:*",
         "log": "workspace:*"
     },
     "devDependencies": {
+        "@prisma/client": "5.19.1",
         "@types/node": "^22.5.0",
         "prisma": "^5.19.1"
     },

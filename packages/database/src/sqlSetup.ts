@@ -12,18 +12,21 @@ export async function seedPrisma() {
             data: [
                 {
                     discord_id: 123456789012345678n,
+                    discord_name: "Sammy",
                     premium: true,
                     posts: 15,
                     runs_left: 5,
                 },
                 {
                     discord_id: 987654321098765432n,
+                    discord_name: "Tommy",
                     premium: false,
                     posts: 10,
                     runs_left: 2,
                 },
                 {
                     discord_id: 192837465564738291n,
+                    discord_name: "Madi",
                     premium: true,
                     posts: 20,
                     runs_left: 3,
@@ -64,10 +67,12 @@ export async function seedPrisma() {
                 {
                     post_id: 1,
                     discord_id: 123456789012345678n,
-                    post_content: "This is a test post",
+                    post_header: "JavaScript Test Post",
+                    post_content:
+                        "Hello guys, I have a problem with the code Im trying to run. Can someone help me?\nCode: console.log('Hello World!');",
                     post_date: new Date(),
                     post_lang: "js",
-                    post_keywords: "test,post",
+                    post_keywords: "test post",
                     post_likes: 10,
                     post_dislikes: 0,
                     post_comments: 5,
@@ -75,10 +80,12 @@ export async function seedPrisma() {
                 {
                     post_id: 2,
                     discord_id: 987654321098765432n,
-                    post_content: "Another post testing",
+                    post_header: "Python Test Post",
+                    post_content:
+                        "Hello everyone. I am trying to run this code but it keeps giving me an error. Can someone help me?\nCode: def main():\n\tuserValue = input('Enter digit: ')\n\tprint(f'You typed: {userValue}')",
                     post_date: new Date(),
                     post_lang: "py",
-                    post_keywords: "another,post",
+                    post_keywords: "another post",
                     post_likes: 5,
                     post_dislikes: 1,
                     post_comments: 2,
@@ -86,10 +93,12 @@ export async function seedPrisma() {
                 {
                     post_id: 3,
                     discord_id: 192837465564738291n,
-                    post_content: "I believe we should add ... to the bot!",
+                    post_header: "Java Test Post",
+                    post_content:
+                        "Hey, I am trying to make a simple problem, but im currently running into some problems. Can someone help me?\nCode: public class Main {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println('Hello World!');\n\t}\n}",
                     post_date: new Date(),
                     post_lang: "java",
-                    post_keywords: "more,post",
+                    post_keywords: "more post",
                     post_likes: 8,
                     post_dislikes: 2,
                     post_comments: 1,
