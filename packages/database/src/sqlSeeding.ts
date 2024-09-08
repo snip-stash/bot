@@ -10,21 +10,24 @@ export async function seedPrisma() {
         await prisma.user.createMany({
             data: [
                 {
-                    id: 123456789012345678n,
+                    id: 1n,
+                    discord_id: 560821786011369472n,
                     username: "Sammy",
                     premium: true,
                     posts: 15,
                     runs: 5,
                 },
                 {
-                    id: 987654321098765432n,
+                    id: 2n,
+                    discord_id: 790506160523706388n,
                     username: "Tommy",
                     premium: false,
                     posts: 10,
                     runs: 2,
                 },
                 {
-                    id: 192837465564738291n,
+                    id: 3n,
+                    discord_id: 449675073872461824n,
                     username: "Madi",
                     premium: true,
                     posts: 20,
@@ -117,6 +120,8 @@ export async function seedPrisma() {
             skipDuplicates: true,
         });
 
+        const pastes = await prisma.paste.findMany();
+
         await prisma.post.createMany({
             data: [
                 {
@@ -126,8 +131,10 @@ export async function seedPrisma() {
                     likes: 10,
                     dislike: 0,
                     keywords: ["javascript", "nodejs", "express", "error", "help"],
-                    code: 1,
-                    error: 2,
+                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
+                    code: pastes[0]!.id,
+                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
+                    error: pastes[1]!.id,
                     comments: 1,
                 },
                 {
@@ -137,7 +144,8 @@ export async function seedPrisma() {
                     likes: 5,
                     dislike: 2,
                     keywords: ["python", "script", "library", "beginner", "pypi"],
-                    code: 3,
+                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
+                    code: pastes[2]!.id,
                     comments: 2,
                 },
                 {
@@ -147,8 +155,10 @@ export async function seedPrisma() {
                     likes: 8,
                     dislike: 1,
                     keywords: ["java", "error", "syntax", "beginner", "help"],
-                    code: 4,
-                    error: 5,
+                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
+                    code: pastes[3]!.id,
+                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
+                    error: pastes[4]!.id,
                     comments: 3,
                 },
             ],

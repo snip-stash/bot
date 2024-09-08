@@ -9,56 +9,58 @@ datasource db {
 }
 
 model User {
-  id            BigInt   @id @default(autoincrement())
-  username      String   @unique
-  premium       Boolean
-  posts         BigInt
-  runs          Int
-  Snippets      Snippet[]
-  Pastes        Paste[]
+  id         BigInt    @id @unique @default(autoincrement())
+  discord_id BigInt    @unique
+  username   String    @unique
+  avatar     Bytes?    @db.ByteA
+  premium    Boolean
+  posts      BigInt
+  runs       Int
+  Snippets   Snippet[]
+  Pastes     Paste[]
 }
 
 model Comments {
-  id               BigInt  @id @default(autoincrement())
-  content          String
-  likes            BigInt?
-  dislikes         BigInt?
-  date             DateTime
-  Posts            Post[]
+  id       BigInt   @id @unique @default(autoincrement())
+  content  String
+  likes    BigInt?
+  dislikes BigInt?
+  date     DateTime
+  Posts    Post[]
 }
 
 model Paste {
-  id             BigInt  @id @default(autoincrement())
-  content        String
-  lang           String  @db.VarChar(10)
-  uploader_id    BigInt
-  uploader       User    @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Posts          Post[]   @relation("PostCode")
-  Errors         Post[]   @relation("PostError")
+  id          String @id @unique @default(nanoid(8))
+  content     String
+  lang        String @db.VarChar(10)
+  uploader_id BigInt
+  uploader    User   @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Posts       Post[] @relation("PostCode")
+  Errors      Post[] @relation("PostError")
 }
 
 model Post {
-  id            BigInt   @id @default(autoincrement())
-  title         String   @db.VarChar(32)
-  description   String   @db.VarChar(500)
-  date          DateTime
-  likes         BigInt
-  dislike       BigInt
-  keywords      String[] @db.VarChar(32)
-  code          BigInt
-  error         BigInt?
-  comments      BigInt
-  PasteCode     Paste    @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  PasteError    Paste?   @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Comments      Comments @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id          BigInt   @id @unique @default(autoincrement())
+  title       String   @db.VarChar(32)
+  description String   @db.VarChar(500)
+  date        DateTime
+  likes       BigInt
+  dislike     BigInt
+  keywords    String[] @db.VarChar(32)
+  code        String
+  error       String?
+  comments    BigInt
+  PasteCode   Paste    @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  PasteError  Paste?   @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Comments    Comments @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Snippet {
-  id           BigInt  @id @default(autoincrement())
-  code         String
-  lang         String  @db.VarChar(10)
-  execution    String?
-  date         DateTime
-  user_id      BigInt
-  user         User    @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id        BigInt   @id @unique @default(autoincrement())
+  code      String
+  lang      String   @db.VarChar(10)
+  execution String?
+  date      DateTime
+  user_id   BigInt
+  user      User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
