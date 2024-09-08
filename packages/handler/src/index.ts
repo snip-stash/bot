@@ -20,7 +20,6 @@ const redis = await getRedis();
 const rest = new REST().setToken(env.DISCORD_TOKEN);
 const gateway = new Gateway({ redis, env });
 await gateway.connect();
-
 const client = new Client({ rest, gateway });
 
 function isChatInput(interaction: any): interaction is APIChatInputApplicationCommandInteraction {

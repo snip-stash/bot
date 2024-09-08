@@ -51,9 +51,6 @@ importers:
 
   packages/database:
     dependencies:
-      '@prisma/client':
-        specifier: 5.19.1
-        version: 5.19.1(prisma@5.19.1)
       core:
         specifier: workspace:*
         version: link:../core
@@ -61,6 +58,9 @@ importers:
         specifier: workspace:*
         version: link:../logger
     devDependencies:
+      '@prisma/client':
+        specifier: 5.19.1
+        version: 5.19.1(prisma@5.19.1)
       '@types/node':
         specifier: ^22.5.0
         version: 22.5.0

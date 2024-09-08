@@ -6,7 +6,7 @@
         "check": "biome check . --fix",
         "check-unsafe": "biome check . --fix --unsafe",
         "build": "pnpm run -r build",
-        "all": "pnpm check && pnpm install && pnpm build"
+        "all": "pnpm check && pnpm install && pnpm build && docker compose up --build"
     },
     "license": "GPL-3.0",
     "devDependencies": {
