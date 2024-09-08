@@ -8,47 +8,57 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-model Users {
-  discord_id   BigInt        @id
-  discord_name String
-  premium      Boolean
-  posts        Int
-  runs_left    Int
-  Posts        Post[]
-  PostComments PostComment[]
-  Snippets     Snippet[]
+model User {
+  id            BigInt   @id @default(autoincrement())
+  username      String   @unique
+  premium       Boolean
+  posts         BigInt
+  runs          Int
+  Snippets      Snippet[]
+  Pastes        Paste[]
 }
 
-model Snippet {
-  snippet_id      BigInt @id @default(autoincrement())
-  discord_id      BigInt
-  snippet_code    String
-  snippet_lang    String @db.VarChar(10)
-  snippet_outcome String
-  user            Users  @relation(fields: [discord_id], references: [discord_id], onDelete: Cascade)
+model Comments {
+  id               BigInt  @id @default(autoincrement())
+  content          String
+  likes            BigInt?
+  dislikes         BigInt?
+  date             DateTime
+  Posts            Post[]
+}
+
+model Paste {
+  id             BigInt  @id @default(autoincrement())
+  content        String
+  lang           String  @db.VarChar(10)
+  uploader_id    BigInt
+  uploader       User    @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Posts          Post[]   @relation("PostCode")
+  Errors         Post[]   @relation("PostError")
 }
 
 model Post {
-  post_id       BigInt        @id @default(autoincrement())
-  discord_id    BigInt
-  post_header   String
-  post_content  String
-  post_date     DateTime
-  post_lang     String        @db.VarChar(10)
-  post_keywords String
-  post_likes    Int
-  post_dislikes Int
-  post_comments Int
-  user          Users         @relation(fields: [discord_id], references: [discord_id], onDelete: Cascade)
-  comments      PostComment[]
+  id            BigInt   @id @default(autoincrement())
+  title         String   @db.VarChar(32)
+  description   String   @db.VarChar(500)
+  date          DateTime
+  likes         BigInt
+  dislike       BigInt
+  keywords      String[] @db.VarChar(32)
+  code          BigInt
+  error         BigInt?
+  comments      BigInt
+  PasteCode     Paste    @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  PasteError    Paste?   @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Comments      Comments @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model PostComment {
-  comment_id      BigInt   @id @default(autoincrement())
-  post_id         BigInt
-  discord_id      BigInt
-  comment_content String
-  comment_date    DateTime
-  user            Users    @relation(fields: [discord_id], references: [discord_id], onDelete: Cascade)
-  post            Post     @relation(fields: [post_id], references: [post_id], onDelete: Cascade)
+model Snippet {
+  id           BigInt  @id @default(autoincrement())
+  code         String
+  lang         String  @db.VarChar(10)
+  execution    String?
+  date         DateTime
+  user_id      BigInt
+  user         User    @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

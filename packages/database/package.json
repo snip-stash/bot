@@ -7,9 +7,7 @@
         "build": "tsc",
         "start": "node dist/index.js",
         "generate": "pnpx prisma generate",
-        "migrate": "pnpx prisma migrate",
-        "push": "pnpx prisma db push --skip-generate",
-        "seed": "pnpx prisma db seed"
+        "push": "pnpx prisma db push --skip-generate"
     },
     "license": "GPL-3.0",
     "dependencies": {
@@ -18,8 +16,13 @@
     },
     "devDependencies": {
         "@prisma/client": "5.19.1",
+        "@snaplet/copycat": "^5.0.0",
+        "@snaplet/seed": "^0.98.0",
         "@types/node": "^22.5.0",
         "prisma": "^5.19.1"
     },
-    "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
+    "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1",
+    "@snaplet/seed": {
+        "config": "prisma/seed/seed.config.ts"
+    }
 }
