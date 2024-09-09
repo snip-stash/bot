@@ -7,6 +7,7 @@ import {
     type APIApplicationCommandInteractionDataOption,
     type APIApplicationCommandInteractionDataSubcommandOption,
     type APIChatInputApplicationCommandInteraction,
+    type APIMessageApplicationCommandInteraction,
     ApplicationCommandOptionType,
     type Snowflake,
 } from "@discordjs/core";
@@ -18,6 +19,11 @@ import { Logger } from "log";
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
     execute: (interaction: APIChatInputApplicationCommandInteraction, api: API) => void;
+}
+
+export interface Button {
+    data: { name: string };
+    execute: (interaction: APIMessageApplicationCommandInteraction, api: API) => void;
 }
 
 export function getCommandOption(
@@ -156,4 +162,31 @@ export async function deployCommands(commands: Map<string, Command>) {
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
     }
+}
+
+export async function loadButtons(): Promise<Map<string, Button>> {
+    logger.infoSingle("Started loading application (▶️ ) buttons.", "Buttons");
+
+    const buttons = new Map<string, Button>();
+    const allFiles = await readdir(new URL("../buttons/", import.meta.url));
+
+    if (!allFiles) {
+        logger.error("Failed to find application (▶️ ) buttons", "Buttons");
+        throw new Error("Failed to find application (▶️ ) buttons");
+    }
+
+    const jsFiles = allFiles.filter((file) => file.endsWith(".js"));
+
+    for (const file of jsFiles) {
+        try {
+            const button = (await import(`../buttons/${file}`)).button;
+            buttons.set(button.data.name, button);
+        } catch (error: any) {
+            logger.error(`Failed to load application (▶️ ) button: ${file}`, "Buttons", error);
+        }
+    }
+
+    logger.infoSingle("Finished loading application (▶️ ) buttons.", "Buttons");
+
+    return buttons;
 }

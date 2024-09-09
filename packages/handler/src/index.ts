@@ -1,5 +1,6 @@
 import {
     type APIChatInputApplicationCommandInteraction,
+    type APIMessageApplicationCommandInteraction,
     ApplicationCommandType,
     Client,
     GatewayDispatchEvents,
@@ -10,12 +11,14 @@ import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
 import { seedPrisma } from "database";
+import { ComponentType } from "discord-api-types/v10";
 import { Logger } from "log";
 import { Gateway } from "./gateway.js";
-import { loadCommands } from "./services/commands.js";
+import { loadButtons, loadCommands } from "./services/commands.js";
 
 const logger = new Logger();
 export const commands = await loadCommands();
+export const buttons = await loadButtons();
 const redis = await getRedis();
 const rest = new REST().setToken(env.DISCORD_TOKEN);
 const gateway = new Gateway({ redis, env });
@@ -26,6 +29,13 @@ function isChatInput(interaction: any): interaction is APIChatInputApplicationCo
     return (
         interaction.type === InteractionType.ApplicationCommand &&
         interaction.data.type === ApplicationCommandType.ChatInput
+    );
+}
+
+function isButtonType(interaction: any): interaction is APIMessageApplicationCommandInteraction {
+    return (
+        interaction.type === InteractionType.MessageComponent &&
+        interaction.data.component_type === ComponentType.Button
     );
 }
 
@@ -42,6 +52,21 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 });
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
+    if (isButtonType(interaction)) {
+        const buttonID = interaction.data?.name; // TODO: FIX THIS 
+        logger.infoSingle(`Button interaction: ${buttonID}`, "Handler");
+
+        const button = buttons.get(buttonID);
+        if (!button) return;
+
+        try {
+            logger.infoSingle(`Executing button: ${button.data.name}`, "Handler");
+            button.execute(interaction, api);
+        } catch (error: any) {
+            logger.error("Button execution error:", "Handler", error);
+        }
+    }
+
     if (!isChatInput(interaction)) return;
     const command = commands.get(interaction.data.name);
 

@@ -1,9 +1,12 @@
+import { env } from "core";
 import { Logger } from "log";
 import { PrismaClient } from "../prisma/gen/client/default.js";
 
 const logger = new Logger();
 
 export async function seedPrisma() {
+    if (!env.DATABASE_SEEDING) return;
+
     logger.infoSingle("Seeding Database", "Prisma");
     const prisma = new PrismaClient();
     try {
