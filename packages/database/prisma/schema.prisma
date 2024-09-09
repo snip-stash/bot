@@ -9,15 +9,18 @@ datasource db {
 }
 
 model User {
-  id         BigInt    @id @unique @default(autoincrement())
-  discord_id BigInt    @unique
-  username   String    @unique
-  avatar     Bytes?    @db.ByteA
-  premium    Boolean
-  posts      BigInt
-  runs       Int
-  Snippets   Snippet[]
-  Pastes     Paste[]
+  id                BigInt    @id @default(autoincrement())
+  discord_id        BigInt?   
+  username          String    
+  avatar            Bytes?    @db.ByteA
+  premium           Boolean
+  posts             BigInt
+  runs              Int
+  Snippets          Snippet[]
+  Pastes            Paste[]
+
+  @@unique([id, discord_id, username])
+
 }
 
 model Comments {
@@ -62,5 +65,5 @@ model Snippet {
   execution String?
   date      DateTime
   user_id   BigInt
-  user      User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  UserSnippet      User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

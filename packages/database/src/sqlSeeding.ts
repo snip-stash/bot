@@ -10,24 +10,25 @@ export async function seedPrisma() {
         await prisma.user.createMany({
             data: [
                 {
-                    id: 1n,
                     discord_id: 560821786011369472n,
                     username: "Sammy",
+                    avatar: Buffer.from(
+                        "https://cdn.discordapp.com/avatars/560821786011369472/d002a9612dcd76f2d8c4672d133ac938.png?size=1024",
+                    ),
                     premium: true,
                     posts: 15,
                     runs: 5,
                 },
                 {
-                    id: 2n,
-                    discord_id: 790506160523706388n,
                     username: "Tommy",
+                    avatar: Buffer.from(
+                        "https://cdn.discordapp.com/avatars/790506160523706388/efaded10086292900e73d6dac5ba3521.png?size=1024",
+                    ),
                     premium: false,
                     posts: 10,
                     runs: 2,
                 },
                 {
-                    id: 3n,
-                    discord_id: 449675073872461824n,
                     username: "Madi",
                     premium: true,
                     posts: 20,
@@ -44,21 +45,21 @@ export async function seedPrisma() {
                     lang: "js",
                     execution: "Hello World in JavaScript!",
                     date: new Date(),
-                    user_id: 123456789012345678n,
+                    user_id: 1n,
                 },
                 {
                     code: 'printf("Hello World in Python!")',
                     lang: "py",
-                    execution: "Hello World in Python!",
+                    execution: "NameError: name 'printf' is not defined",
                     date: new Date(),
-                    user_id: 987654321098765432n,
+                    user_id: 2n,
                 },
                 {
                     code: 'System.out.println("Hello World!);',
                     lang: "java",
-                    execution: "Error: Missing closing quote",
+                    execution: "error: unclosed string literal",
                     date: new Date(),
-                    user_id: 192837465564738291n,
+                    user_id: 3n,
                 },
             ],
             skipDuplicates: true,
@@ -93,28 +94,28 @@ export async function seedPrisma() {
                 {
                     content: 'console.log("Hello World in JavaScript!`);',
                     lang: "js",
-                    uploader_id: 123456789012345678n,
+                    uploader_id: 1n,
                 },
                 {
                     content: "Error: Missing closing quote",
                     lang: "js",
-                    uploader_id: 123456789012345678n,
+                    uploader_id: 1n,
                 },
                 {
                     content:
                         "from typing import Dict\n\ndef grabUser() -> Dict[str, str]:\n\tname = input('Enter Name: ')\n\tage = input('Enter Age: ')\n\tuser_dict = {'name': name, 'age': age}\n\tprint(f'Details: Name: {name} Age: {age}')\n\tprint('Your details have been stored')\n\n\treturn user_dict\n\ngrabUser()",
                     lang: "py",
-                    uploader_id: 987654321098765432n,
+                    uploader_id: 2n,
                 },
                 {
                     content: 'System.println("Hello World!");',
                     lang: "java",
-                    uploader_id: 192837465564738291n,
+                    uploader_id: 3n,
                 },
                 {
                     content: "Error: System.println does not exist",
                     lang: "java",
-                    uploader_id: 192837465564738291n,
+                    uploader_id: 3n,
                 },
             ],
             skipDuplicates: true,
