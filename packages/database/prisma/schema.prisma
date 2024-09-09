@@ -9,16 +9,18 @@ datasource db {
 }
 
 model User {
-  id                BigInt    @id @unique @default(autoincrement())
-  discord_id        BigInt    @unique
-  connected_discord Boolean   @default(false)
-  username          String    @unique
+  id                BigInt    @id @default(autoincrement())
+  discord_id        BigInt?   
+  username          String    
   avatar            Bytes?    @db.ByteA
   premium           Boolean
   posts             BigInt
   runs              Int
   Snippets          Snippet[]
   Pastes            Paste[]
+
+  @@unique([id, discord_id, username])
+
 }
 
 model Comments {

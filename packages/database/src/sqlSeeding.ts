@@ -12,26 +12,27 @@ export async function seedPrisma() {
                 {
                     discord_id: 560821786011369472n,
                     username: "Sammy",
+                    avatar: Buffer.from(
+                        "https://cdn.discordapp.com/avatars/560821786011369472/d002a9612dcd76f2d8c4672d133ac938.png?size=1024",
+                    ),
                     premium: true,
                     posts: 15,
                     runs: 5,
-                    connected_discord: true,
                 },
                 {
-                    discord_id: 790506160523706388n,
                     username: "Tommy",
+                    avatar: Buffer.from(
+                        "https://cdn.discordapp.com/avatars/790506160523706388/efaded10086292900e73d6dac5ba3521.png?size=1024",
+                    ),
                     premium: false,
                     posts: 10,
                     runs: 2,
-                    connected_discord: false,
                 },
                 {
-                    discord_id: 449675073872461824n,
                     username: "Madi",
                     premium: true,
                     posts: 20,
                     runs: 3,
-                    connected_discord: true,
                 },
             ],
             skipDuplicates: true,
