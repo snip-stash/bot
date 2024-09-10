@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, inlineCode } from "@discordjs/builders";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import { type Command, getCommandOption } from "../services/commands.js";
+import { type Command, getCommandOption } from "../../services/commands.js";
 
 const languages = Array.from([
     { name: "JavaScript", value: ".js" },
@@ -17,7 +17,7 @@ const languages = Array.from([
     { name: "NASM64", value: ".nasm64" },
 ]);
 
-export const command: Command = {
+export const component: Command = {
     data: new SlashCommandBuilder()
         .setName("code-runner")
         .setDescription("Run code in a variety of languages")
@@ -29,21 +29,16 @@ export const command: Command = {
                 .addChoices(languages),
         )
         .addStringOption((option) => option.setName("code").setDescription("The code to run").setRequired(true)),
-    async execute(interaction, api): Promise<void> {
-        const languageOption = getCommandOption(
-            "language",
-            ApplicationCommandOptionType.String,
-            interaction.data.options,
-        );
-        const codeOption = getCommandOption("code", ApplicationCommandOptionType.String, interaction.data.options);
+    async execute(interaction): Promise<void> {
+        const languageOption = getCommandOption("language", ApplicationCommandOptionType.String, interaction.options);
+        const codeOption = getCommandOption("code", ApplicationCommandOptionType.String, interaction.options);
 
         if (!languageOption || !languages.some((lang) => lang.value === languageOption))
-            return await api.interactions.reply(interaction.id, interaction.token, { content: "Invalid Language" });
+            return await interaction.reply({ content: "Invalid Language", ephemeral: true });
 
-        if (!codeOption)
-            return await api.interactions.reply(interaction.id, interaction.token, { content: "Invalid Code" });
+        if (!codeOption) return await interaction.reply({ content: "Invalid Code", ephemeral: true });
 
-        await api.interactions.reply(interaction.id, interaction.token, {
+        await interaction.reply({
             content: `File Format: ${inlineCode(languageOption)}\nCode: ${inlineCode(codeOption)}`,
         });
     },

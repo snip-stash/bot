@@ -26,12 +26,7 @@ export async function connectPrisma() {
     });
 
     prisma.$on("query", (e: any) => {
-        logger.info("Query", "Prisma", {
-            query: e.query,
-            params: e.params,
-            duration: `${e.duration}ms`,
-            timestamp: e.timestamp,
-        });
+        logger.info("Query Created:", "Prisma", { duration: `${e.duration}ms`, timestamp: e.timestamp });
     });
 
     prisma.$on("info", (e: any) => {
