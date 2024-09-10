@@ -7,7 +7,7 @@ import {
     type APIApplicationCommandInteractionDataOption,
     type APIApplicationCommandInteractionDataSubcommandOption,
     type APIChatInputApplicationCommandInteraction,
-    type APIMessageApplicationCommandInteraction,
+    type APIMessageComponentInteraction,
     ApplicationCommandOptionType,
     type Snowflake,
 } from "@discordjs/core";
@@ -23,7 +23,7 @@ export interface Command {
 
 export interface Button {
     data: { name: string };
-    execute: (interaction: APIMessageApplicationCommandInteraction, api: API) => void;
+    execute: (interaction: APIMessageComponentInteraction, api: API) => void;
 }
 
 export function getCommandOption(

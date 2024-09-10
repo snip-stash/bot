@@ -2,12 +2,6 @@ import { EmbedBuilder, SlashCommandBuilder, bold, inlineCode } from "@discordjs/
 import { loadCommands } from "../services/commands.js";
 import type { Command } from "../services/commands.js";
 
-/*
-
-TODO: Add emojis to make it much nicer to look at.
-
-*/
-
 export const command: Command = {
     data: new SlashCommandBuilder().setName("help").setDescription("View a list of commands from the bot"),
     async execute(interaction, api): Promise<void> {

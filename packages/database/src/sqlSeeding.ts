@@ -18,7 +18,6 @@ export async function seedPrisma() {
                     premium: true,
                     posts: 15,
                     runs: 5,
-                    connected_discord: true,
                 },
                 {
                     discord_id: 790506160523706388n,
@@ -26,7 +25,6 @@ export async function seedPrisma() {
                     premium: false,
                     posts: 10,
                     runs: 2,
-                    connected_discord: false,
                 },
                 {
                     discord_id: 449675073872461824n,
@@ -34,7 +32,6 @@ export async function seedPrisma() {
                     premium: true,
                     posts: 20,
                     runs: 3,
-                    connected_discord: true,
                 },
             ],
             skipDuplicates: true,

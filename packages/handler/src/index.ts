@@ -1,6 +1,6 @@
 import {
     type APIChatInputApplicationCommandInteraction,
-    type APIMessageApplicationCommandInteraction,
+    type APIMessageComponentInteraction,
     ApplicationCommandType,
     Client,
     GatewayDispatchEvents,
@@ -32,10 +32,11 @@ function isChatInput(interaction: any): interaction is APIChatInputApplicationCo
     );
 }
 
-function isButtonType(interaction: any): interaction is APIMessageApplicationCommandInteraction {
+function isButtonType(interaction: any): interaction is APIMessageComponentInteraction {
     return (
         interaction.type === InteractionType.MessageComponent &&
-        interaction.data.component_type === ComponentType.Button
+        interaction.data.component_type === ComponentType.Button &&
+        interaction.data.custom_id !== undefined
     );
 }
 
@@ -53,10 +54,7 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
     if (isButtonType(interaction)) {
-        const buttonID = interaction.data?.name; // TODO: FIX THIS 
-        logger.infoSingle(`Button interaction: ${buttonID}`, "Handler");
-
-        const button = buttons.get(buttonID);
+        const button = buttons.get(interaction.data?.custom_id);
         if (!button) return;
 
         try {
