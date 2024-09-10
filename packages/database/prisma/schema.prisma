@@ -13,9 +13,9 @@ model User {
   discord_id        BigInt?   
   username          String    
   avatar            Bytes?    @db.ByteA
-  premium           Boolean
-  posts             BigInt
-  runs              Int
+  premium           Boolean   @default(false)
+  posts             Int       @default(0)
+  runs              Int       @default(30)
   Snippets          Snippet[]
   Pastes            Paste[]
 
@@ -26,9 +26,9 @@ model User {
 model Comments {
   id       BigInt   @id @unique @default(autoincrement())
   content  String
-  likes    BigInt?
-  dislikes BigInt?
-  date     DateTime
+  likes    Int?
+  dislikes Int?
+  date     DateTime @default(now())
   Posts    Post[]
 }
 
@@ -43,27 +43,27 @@ model Paste {
 }
 
 model Post {
-  id          BigInt   @id @unique @default(autoincrement())
-  title       String   @db.VarChar(32)
-  description String   @db.VarChar(500)
-  date        DateTime
-  likes       BigInt
-  dislike     BigInt
-  keywords    String[] @db.VarChar(32)
+  id          BigInt    @id @unique @default(autoincrement())
+  title       String    @db.VarChar(32)
+  description String    @db.VarChar(500)
+  date        DateTime? @default(now())
+  likes       Int       @default(0)
+  dislike     Int       @default(0)
+  keywords    String[]  @db.VarChar(32)
   code        String
   error       String?
   comments    BigInt
-  PasteCode   Paste    @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  PasteError  Paste?   @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Comments    Comments @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  PasteCode   Paste     @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  PasteError  Paste?    @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Comments    Comments  @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Snippet {
-  id        BigInt   @id @unique @default(autoincrement())
-  code      String
-  lang      String   @db.VarChar(10)
-  execution String?
-  date      DateTime
-  user_id   BigInt
-  UserSnippet      User     @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id           BigInt     @id @unique @default(autoincrement())
+  code         String
+  lang         String     @db.VarChar(10)
+  result       String?
+  date         DateTime?  @default(now())
+  user_id      BigInt
+  UserSnippet  User       @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
