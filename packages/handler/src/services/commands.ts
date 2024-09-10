@@ -2,11 +2,9 @@ import { readdir } from "node:fs/promises";
 import { URL } from "node:url";
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
 import {
-    type API,
     type APIApplicationCommandInteractionDataBasicOption,
     type APIApplicationCommandInteractionDataOption,
     type APIApplicationCommandInteractionDataSubcommandOption,
-    type APIChatInputApplicationCommandInteraction,
     ApplicationCommandOptionType,
     type Snowflake,
 } from "@discordjs/core";
@@ -14,10 +12,22 @@ import { REST } from "@discordjs/rest";
 import { env } from "core";
 import { Routes } from "discord-api-types/v10";
 import { Logger } from "log";
+import type { ButtonInteraction } from "../classes/ButtonInteraction.js";
+import type { CommandInteraction } from "../classes/CommandInteraction.js";
+import type { ModalInteraction } from "../classes/ModalInteraction.js";
 
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
-    execute: (interaction: APIChatInputApplicationCommandInteraction, api: API) => void;
+    execute: (interaction: CommandInteraction) => void;
+}
+
+export interface Button {
+    custom_id: string;
+    execute: (interaction: ButtonInteraction) => void;
+}
+export interface Modal {
+    custom_id: string;
+    execute: (interaction: ModalInteraction) => void;
 }
 
 export function getCommandOption(
@@ -97,38 +107,8 @@ export function getCommandOption(
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
 const logger = new Logger();
 
-export async function loadCommands(): Promise<Map<string, Command>> {
-    logger.infoSingle("Started loading application (/) commands.", "Commands");
-
-    const commands = new Map<string, Command>();
-    const allFiles = await readdir(new URL("../commands/", import.meta.url));
-
-    if (!allFiles) {
-        logger.error("Failed to find application (/) commands", "Commands");
-        throw new Error("Failed to find application (/) commands");
-    }
-
-    const jsFiles = allFiles.filter((file) => file.endsWith(".js"));
-
-    for (const file of jsFiles) {
-        try {
-            const command = (await import(`../commands/${file}`)).command;
-            commands.set(command.data.name, command);
-        } catch (error: any) {
-            logger.error(`Failed to load application (/) command: ${file}`, "Commands", error);
-        }
-    }
-
-    logger.infoSingle("Finished loading application (/) commands.", "Commands");
-
-    return commands;
-}
-
 export async function deployCommands(commands: Map<string, Command>) {
-    logger.info("Started deploying application (/) commands.", "Commands", {
-        commands: Array.from(commands.keys()),
-        count: commands.size,
-    });
+    logger.infoSingle("Started deploying application (/) commands.", "Commands");
 
     try {
         await rest.put(Routes.applicationCommands(env.DISCORD_APPLICATION_ID), {
@@ -156,4 +136,48 @@ export async function deployCommands(commands: Map<string, Command>) {
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
     }
+}
+
+export enum FileType {
+    Commands = "commands",
+    Buttons = "buttons",
+    Modals = "modals",
+}
+
+export async function load<T = Command>(type: FileType.Commands): Promise<Map<string, T>>;
+export async function load<T = Button>(type: FileType.Buttons): Promise<Map<string, T>>;
+export async function load<T = Modal>(type: FileType.Modals): Promise<Map<string, T>>;
+export async function load<T>(type: FileType): Promise<Map<string, T>> {
+    logger.infoSingle("Started loading application (📝) files.", "Files");
+
+    const files = new Map<string, T>();
+    const allFiles = await readdir(new URL(`../components/${type}/`, import.meta.url));
+
+    if (!allFiles) {
+        logger.error(`Failed to find ${type} (📝)`, "Files");
+        throw new Error(`Failed to find ${type} (📝) ${type}`);
+    }
+
+    const jsFiles = allFiles.filter((file) => file.endsWith(".js"));
+
+    for (const file of jsFiles) {
+        try {
+            const component = (await import(`../components/${type}/${file}`)).component;
+            files.set(getName(component), component);
+        } catch (error: any) {
+            logger.error(`Failed to load ${type} (📝) file: ${file}`, "Files", error);
+        }
+    }
+
+    logger.info("Successfully imported application (📝) files.", "Files", {
+        files: Array.from(files.keys()),
+        count: files.size,
+    });
+
+    return files;
+}
+
+function getName(component: Command | Button | Modal): string {
+    if ("data" in component) return component.data.name;
+    return component.custom_id;
 }

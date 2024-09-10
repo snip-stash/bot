@@ -1,17 +1,10 @@
 import { EmbedBuilder, SlashCommandBuilder, bold, inlineCode } from "@discordjs/builders";
-import { loadCommands } from "../services/commands.js";
-import type { Command } from "../services/commands.js";
+import { type Command, FileType, load } from "../../services/commands.js";
 
-/*
-
-TODO: Add emojis to make it much nicer to look at.
-
-*/
-
-export const command: Command = {
+export const component: Command = {
     data: new SlashCommandBuilder().setName("help").setDescription("View a list of commands from the bot"),
-    async execute(interaction, api): Promise<void> {
-        const commands = await loadCommands();
+    async execute(interaction): Promise<void> {
+        const commands = await load(FileType.Commands);
         const maxLength = Math.max(...Array.from(commands.values()).map((command) => command.data.name.length)) + 2;
         const paddedHeader = "Commands".padStart((maxLength + "Commands".length) / 2).padEnd(maxLength);
 
@@ -27,8 +20,6 @@ export const command: Command = {
             )
             .setFooter({ text: "• Use /help <command> to get more information about a specific command •" });
 
-        await api.interactions.reply(interaction.id, interaction.token, {
-            embeds: [embed.toJSON()],
-        });
+        await interaction.reply({ embeds: [embed] });
     },
 };
