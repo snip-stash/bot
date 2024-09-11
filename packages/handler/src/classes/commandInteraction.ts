@@ -1,5 +1,5 @@
 import type { API, APIChatInputApplicationCommandInteraction } from "@discordjs/core";
-import { BaseInteraction } from "./BaseInteraction.js";
+import { BaseInteraction } from "./baseInteraction.js";
 
 export class CommandInteraction extends BaseInteraction {
     constructor(

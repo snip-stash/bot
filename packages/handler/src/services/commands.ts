@@ -12,9 +12,9 @@ import { REST } from "@discordjs/rest";
 import { env } from "core";
 import { Routes } from "discord-api-types/v10";
 import { Logger } from "log";
-import type { ButtonInteraction } from "../classes/ButtonInteraction.js";
-import type { CommandInteraction } from "../classes/CommandInteraction.js";
-import type { ModalInteraction } from "../classes/ModalInteraction.js";
+import type { ButtonInteraction } from "../classes/buttonInteraction.js";
+import type { CommandInteraction } from "../classes/commandInteraction.js";
+import type { ModalInteraction } from "../classes/modalInteraction.js";
 
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
@@ -115,10 +115,7 @@ export async function deployCommands(commands: Map<string, Command>) {
             body: Array.from(commands.values()).map((command) => command.data.toJSON()),
         });
 
-        logger.info("Successfully deployed global application (/) commands.", "Commands", {
-            commands: Array.from(commands.keys()),
-            count: commands.size,
-        });
+        logger.infoSingle("Successfully deployed global application (/) commands.", "Commands");
 
         if (env.DISCORD_TEST_GUILD_ID) {
             await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, env.DISCORD_TEST_GUILD_ID), {
@@ -128,10 +125,7 @@ export async function deployCommands(commands: Map<string, Command>) {
                 }),
             });
 
-            logger.info("Successfully deployed guild application (/) commands.", "Commands", {
-                commands: Array.from(commands.keys()),
-                count: commands.size,
-            });
+            logger.infoSingle("Successfully deployed guild application (/) commands.", "Commands");
         }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
