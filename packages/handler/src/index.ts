@@ -80,7 +80,7 @@ const interactionHandle: Record<string, (interaction: any, api: any) => void> = 
         }
     },
 
-    ApplicationCommand: (interaction: APIChatInputApplicationCommandInteraction, api: API) => {
+    ChatCommand: (interaction: APIChatInputApplicationCommandInteraction, api: API) => {
         const command = commands.get(interaction.data.name);
         if (!command) return;
 
@@ -108,7 +108,6 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
     if (determineType(interaction, interaction.type)) {
         const interactionType = interaction.type;
-
         const handler = interactionHandle[InteractionType[interactionType]];
 
         if (handler) {
