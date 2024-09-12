@@ -142,7 +142,7 @@ export async function load<T = Command>(type: FileType.Commands): Promise<Map<st
 export async function load<T = Button>(type: FileType.Buttons): Promise<Map<string, T>>;
 export async function load<T = Modal>(type: FileType.Modals): Promise<Map<string, T>>;
 export async function load<T>(type: FileType): Promise<Map<string, T>> {
-    logger.infoSingle("Started loading application (📝) files.", "Files");
+    logger.infoSingle(`Started loading ${type} (📝) files.`, "Files");
 
     const files = new Map<string, T>();
     const allFiles = await readdir(new URL(`../components/${type}/`, import.meta.url));
@@ -163,7 +163,7 @@ export async function load<T>(type: FileType): Promise<Map<string, T>> {
         }
     }
 
-    logger.info("Successfully imported application (📝) files.", "Files", {
+    logger.info(`Successfully imported ${type} (📝) files.`, "Files", {
         files: Array.from(files.keys()),
         count: files.size,
     });
