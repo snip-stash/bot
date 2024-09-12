@@ -32,6 +32,12 @@ const gateway = new Gateway({ redis, env });
 await gateway.connect();
 const client = new Client({ rest, gateway });
 
+enum InteractTypes {
+    ApplicationCommand = 2,
+    MessageComponent = 3,
+    ModalSubmit = 5,
+}
+
 function determineType(
     interaction: APIInteraction,
     type: InteractionType,
@@ -54,8 +60,8 @@ function determineType(
     }
 }
 
-const interactionHandle: Record<string, (interaction: any, api: any) => void> = {
-    ModalSubmit: (interaction: APIModalSubmitInteraction, api: API) => {
+const interactionHandle: Record<InteractTypes, (interaction: any, api: any) => void> = {
+    [InteractTypes.ModalSubmit]: (interaction: APIModalSubmitInteraction, api: API) => {
         logger.infoSingle(`Received modal interaction: ${interaction.data.custom_id}`, "Handler");
         const modal = modals.get(interaction.data.custom_id);
         if (!modal) return;
@@ -68,7 +74,7 @@ const interactionHandle: Record<string, (interaction: any, api: any) => void> = 
         }
     },
 
-    MessageComponent: (interaction: APIMessageComponentInteraction, api: API) => {
+    [InteractTypes.MessageComponent]: (interaction: APIMessageComponentInteraction, api: API) => {
         const button = buttons.get(interaction.data?.custom_id);
         if (!button) return;
 
@@ -80,7 +86,7 @@ const interactionHandle: Record<string, (interaction: any, api: any) => void> = 
         }
     },
 
-    ChatCommand: (interaction: APIChatInputApplicationCommandInteraction, api: API) => {
+    [InteractTypes.ApplicationCommand]: (interaction: APIChatInputApplicationCommandInteraction, api: API) => {
         const command = commands.get(interaction.data.name);
         if (!command) return;
 
@@ -108,7 +114,7 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
     if (determineType(interaction, interaction.type)) {
         const interactionType = interaction.type;
-        const handler = interactionHandle[InteractionType[interactionType]];
+        const handler = interactionHandle[interactionType];
 
         if (handler) {
             handler(interaction, api);
