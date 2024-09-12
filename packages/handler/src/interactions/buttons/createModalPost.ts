@@ -1,6 +1,6 @@
 import type { Button } from "../../services/commands.js";
 
-export const component: Button = {
+export const interaction: Button = {
     custom_id: "create_post",
     async execute(interaction): Promise<void> {
         await interaction.reply({

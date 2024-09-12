@@ -10,7 +10,7 @@ import {
 import { ButtonStyle } from "@discordjs/core";
 import type { Modal } from "../../services/commands.js";
 
-export const component: Modal = {
+export const interaction: Modal = {
     custom_id: "create-post-modal",
     async execute(interaction): Promise<void> {
         const title = interaction.getModalValue("create-post-title")?.value;

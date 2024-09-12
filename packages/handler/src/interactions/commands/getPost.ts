@@ -10,9 +10,9 @@ import { ButtonStyle } from "@discordjs/core";
 import prisma from "database";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import type { Command } from "../../services/commands.js";
-import { getCommandOption } from "../../services/commands.js";
+import { getCommandOption } from "../../utility/interactionUtils.js";
 
-export const component: Command = {
+export const interaction: Command = {
     data: new SlashCommandBuilder()
         .setName("get-post")
         .setDescription("Grab a post that you can review.")

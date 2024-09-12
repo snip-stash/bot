@@ -8,7 +8,7 @@ import {
 import { TextInputStyle } from "@discordjs/core";
 import type { Command } from "../../services/commands.js";
 
-export const component: Command = {
+export const interaction: Command = {
     data: new SlashCommandBuilder()
         .setName("create-post")
         .setDescription("Create a post that you want to share/need help with"),
