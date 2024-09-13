@@ -1,13 +1,5 @@
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    EmbedBuilder,
-    bold,
-    codeBlock,
-    formatEmoji,
-    inlineCode,
-} from "@discordjs/builders";
-import { ButtonStyle } from "@discordjs/core";
+import { EmbedBuilder, bold, codeBlock, formatEmoji, inlineCode } from "@discordjs/builders";
+import prisma from "database";
 import type { Modal } from "../../services/commands.js";
 
 export const interaction: Modal = {
@@ -27,6 +19,35 @@ export const interaction: Modal = {
             return;
         }
 
+        const createPost = await (await prisma).post.create({
+            include: { uploader: true, paste: true },
+            data: {
+                uploader: {
+                    connectOrCreate: {
+                        where: { id: interaction.member_id },
+                        create: {
+                            id: interaction.member_id,
+                            username: interaction.member_name,
+                        },
+                    },
+                },
+                paste: {
+                    connectOrCreate: {
+                        where: { uploader_id: interaction.member_id },
+                        create: {
+                            content: code,
+                            language,
+                            uploader: {
+                                connect: { id: interaction.member_id },
+                            },
+                        },
+                    },
+                },
+                title: title,
+                description: description,
+            },
+        });
+
         const embed = new EmbedBuilder()
             .setDescription(`
                 ${formatEmoji("1283395868648673331")} ${bold(inlineCode(title))}
@@ -41,18 +62,11 @@ export const interaction: Modal = {
                         : ""
                 }
                 `)
-            .setColor(0x2f3136);
-
-        const createButton = new ButtonBuilder()
-            .setCustomId("create_post")
-            .setLabel("Create")
-            .setStyle(ButtonStyle.Success);
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(createButton);
-
+            .setColor(0x2f3136)
+            .setFooter({ text: `ID: ${createPost.id}` });
         await interaction.reply({
-            content: bold("Are the following details correct?"),
+            content: bold("You have successfully made a post!"),
             embeds: [embed],
-            components: [row],
             ephemeral: true,
         });
     },

@@ -4,6 +4,15 @@ import { PrismaClient } from "../prisma/gen/client/default.js";
 
 const logger = new Logger();
 
+export function nanoid(num: number): string {
+    const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let nanoid = "";
+    for (let i = 0; i < num; i++) {
+        nanoid += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return nanoid;
+}
+
 export async function seedPrisma() {
     if (!env.DATABASE_SEEDING) return;
 
@@ -13,29 +22,30 @@ export async function seedPrisma() {
         await prisma.user.createMany({
             data: [
                 {
-                    discord_id: 560821786011369472n,
+                    id: 560821786011369472n,
                     username: "Sammy",
                     avatar: Buffer.from(
                         "https://cdn.discordapp.com/avatars/560821786011369472/d002a9612dcd76f2d8c4672d133ac938.png?size=1024",
                     ),
                     premium: true,
-                    posts: 15,
-                    runs: 5,
+                    amount_of_posts: 15,
+                    code_runs: 5,
                 },
                 {
                     username: "Tommy",
                     avatar: Buffer.from(
-                        "https://cdn.discordapp.com/avatars/790506160523706388/efaded10086292900e73d6dac5ba3521.png?size=1024",
+                        "https://cdn.discordapp.com/avatars/237438743287483258/efaded10086292900e73d6dac5ba3521.png?size=1024",
                     ),
                     premium: false,
-                    posts: 10,
-                    runs: 2,
+                    amount_of_posts: 10,
+                    code_runs: 2,
                 },
                 {
+                    id: 237438743287483258n,
                     username: "Madi",
                     premium: true,
-                    posts: 20,
-                    runs: 3,
+                    amount_of_posts: 20,
+                    code_runs: 3,
                 },
             ],
             skipDuplicates: true,
@@ -45,42 +55,53 @@ export async function seedPrisma() {
             data: [
                 {
                     code: 'console.log("Hello World in JavaScript!");',
-                    lang: "js",
+                    language: "js",
                     result: "Hello World in JavaScript!",
-                    user_id: 1n,
+                    uploader_id: 560821786011369472n,
                 },
                 {
                     code: 'printf("Hello World in Python!")',
-                    lang: "py",
+                    language: "py",
                     result: "NameError: name 'printf' is not defined",
-                    user_id: 2n,
+                    uploader_id: 1n,
                 },
                 {
                     code: 'System.out.println("Hello World!);',
-                    lang: "java",
+                    language: "java",
                     result: "error: unclosed string literal",
-                    user_id: 3n,
+                    uploader_id: 237438743287483258n,
                 },
             ],
             skipDuplicates: true,
         });
 
-        await prisma.comments.createMany({
+        await prisma.post.createMany({
             data: [
                 {
-                    content: "It appears you used a backtick instead of a quote.",
+                    uploader_id: 560821786011369472n,
+                    title: "Need help with Javascript !!",
+                    description: "Hello guys, I have a problem with the code I'm trying to run. Can someone help me?",
                     likes: 10,
                     dislikes: 0,
+                    keywords: ["javascript", "nodejs", "express", "error", "help"],
+                    paste_id: nanoid(8),
                 },
                 {
-                    content: "You need to import the print function from the future.",
-                    likes: 2,
-                    dislikes: 5,
-                },
-                {
-                    content: "You missed a closing quote in the string.",
+                    uploader_id: 1n,
+                    title: "Python script !",
+                    description: "Hey, I just wrote this new Python script. Can someone review it for me?",
                     likes: 5,
+                    dislikes: 2,
+                    paste_id: nanoid(8),
+                },
+                {
+                    uploader_id: 237438743287483258n,
+                    title: "Java error",
+                    description: "I'm getting a syntax error in my Java code. Can someone point out the mistake?",
+                    likes: 8,
                     dislikes: 1,
+                    keywords: ["java", "error", "syntax", "beginner", "help"],
+                    paste_id: nanoid(8),
                 },
             ],
             skipDuplicates: true,
@@ -89,72 +110,47 @@ export async function seedPrisma() {
         await prisma.paste.createMany({
             data: [
                 {
+                    id: "1",
                     content: 'console.log("Hello World in JavaScript!`);',
-                    lang: "js",
-                    uploader_id: 1n,
+                    language: "js",
+                    uploader_id: 560821786011369472n,
                 },
                 {
-                    content: "Error: Missing closing quote",
-                    lang: "js",
-                    uploader_id: 1n,
-                },
-                {
+                    id: "2",
                     content:
                         "from typing import Dict\n\ndef grabUser() -> Dict[str, str]:\n\tname = input('Enter Name: ')\n\tage = input('Enter Age: ')\n\tuser_dict = {'name': name, 'age': age}\n\tprint(f'Details: Name: {name} Age: {age}')\n\tprint('Your details have been stored')\n\n\treturn user_dict\n\ngrabUser()",
-                    lang: "py",
-                    uploader_id: 2n,
+                    language: "py",
+                    uploader_id: 1n,
                 },
                 {
+                    id: "3",
                     content: 'System.println("Hello World!");',
-                    lang: "java",
-                    uploader_id: 3n,
-                },
-                {
-                    content: "Error: System.println does not exist",
-                    lang: "java",
-                    uploader_id: 3n,
+                    language: "java",
+                    uploader_id: 237438743287483258n,
                 },
             ],
             skipDuplicates: true,
         });
 
-        const pastes = await prisma.paste.findMany();
-
-        await prisma.post.createMany({
+        await prisma.comments.createMany({
             data: [
                 {
-                    title: "Need help with Javascript !!",
-                    description: "Hello guys, I have a problem with the code I'm trying to run. Can someone help me?",
+                    uploader_id: 560821786011369472n,
+                    content: "It appears you used a backtick instead of a quote.",
                     likes: 10,
-                    dislike: 0,
-                    keywords: ["javascript", "nodejs", "express", "error", "help"],
-                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
-                    code: pastes[0]!.id,
-                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
-                    error: pastes[1]!.id,
-                    comments: 1,
+                    dislikes: 0,
                 },
                 {
-                    title: "Python script !",
-                    description: "Hey, I just wrote this new Python script. Can someone review it for me?",
+                    uploader_id: 1n,
+                    content: "You need to import the print function from the future.",
+                    likes: 2,
+                    dislikes: 5,
+                },
+                {
+                    uploader_id: 237438743287483258n,
+                    content: "You missed a closing quote in the string.",
                     likes: 5,
-                    dislike: 2,
-                    keywords: ["python", "script", "library", "beginner", "pypi"],
-                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
-                    code: pastes[2]!.id,
-                    comments: 2,
-                },
-                {
-                    title: "Java error",
-                    description: "I'm getting a syntax error in my Java code. Can someone point out the mistake?",
-                    likes: 8,
-                    dislike: 1,
-                    keywords: ["java", "error", "syntax", "beginner", "help"],
-                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
-                    code: pastes[3]!.id,
-                    // biome-ignore lint/style/noNonNullAssertion: We create exactly 5 pastes above
-                    error: pastes[4]!.id,
-                    comments: 3,
+                    dislikes: 1,
                 },
             ],
             skipDuplicates: true,

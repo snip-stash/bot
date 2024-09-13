@@ -20,7 +20,7 @@ export const interaction: Command = {
     async execute(interaction): Promise<void> {
         const getOption = getCommandOption("id", ApplicationCommandOptionType.Number, interaction.options) || -1;
         const getQuery = await (await prisma).post.findUnique({
-            include: { PasteCode: true, PasteError: true },
+            include: { paste: true },
             where: { id: getOption },
         });
 
@@ -36,9 +36,9 @@ export const interaction: Command = {
             .setTitle(getQuery?.title)
             .setDescription(
                 `   ${bold("Content")}
-                    ${getQuery?.description}\n${codeBlock(getQuery?.PasteCode.lang, getQuery?.PasteCode.content)}
-                    ${getQuery?.PasteError?.content ? `${bold("Error")}\n${codeBlock(getQuery?.PasteCode.lang, getQuery?.PasteError?.content)}` : ""}\n
-                    ${bold("Likes")} : ${getQuery?.likes} ~ ${bold("Dislikes")} : ${getQuery?.dislike}
+                    ${getQuery?.description}\n${codeBlock(getQuery?.paste?.language || "js", getQuery?.paste?.content || "No Content")}
+                    ${getQuery?.paste?.content ? `${bold("Error")}\n${codeBlock(getQuery?.paste?.language || "js", getQuery?.paste?.content)}` : ""}\n
+                    ${bold("Likes")} : ${getQuery?.likes} ~ ${bold("Dislikes")} : ${getQuery?.dislikes}
                 `,
             )
             .setColor(0x2f3136)

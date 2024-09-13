@@ -26,6 +26,14 @@ export class BaseInteraction {
         return this.interaction.member;
     }
 
+    get member_id() {
+        return BigInt(this.member?.user.id || "0");
+    }
+
+    get member_name() {
+        return this.member?.user.username || "undefined";
+    }
+
     public async reply(
         options: {
             content?: string;
