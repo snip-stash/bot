@@ -36,9 +36,9 @@ export const interaction: Command = {
             .setTitle(getQuery?.title)
             .setDescription(
                 `   ${bold("Content")}
-                    ${getQuery?.description}\n${codeBlock(getQuery?.paste?.language || "js", getQuery?.paste?.content || "No Content")}
-                    ${getQuery?.paste?.content ? `${bold("Error")}\n${codeBlock(getQuery?.paste?.language || "js", getQuery?.paste?.content)}` : ""}\n
-                    ${bold("Likes")} : ${getQuery?.likes} ~ ${bold("Dislikes")} : ${getQuery?.dislikes}
+                    ${getQuery?.description}\n${codeBlock("js", getQuery?.paste?.content || "No Content")}
+                    ${getQuery?.paste?.content ? `${bold("Error")}\n${codeBlock("js", getQuery?.paste?.content)}` : ""}\n
+                    ${bold("Likes")} : 0 ~ ${bold("Dislikes")} : 0
                 `,
             )
             .setColor(0x2f3136)

@@ -8,65 +8,54 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+enum ContentType {
+  CODE
+  ERROR
+}
+
 model User {
-  // ID can either be the discord id or the id of the user in the database
-  // If the user connects their discord account, the id will be the discord id
-  id                    BigInt          @id @unique @default(autoincrement())
-  username              String          @unique @db.VarChar(32)
-  avatar                Bytes?          @db.ByteA
-  premium               Boolean         @default(false)
-  amount_of_posts       Int             @default(0)
-  code_runs             Int             @default(30)
-  snippets              Snippet[]
-  comments              Comments[]
-  pastes                Paste[]
-  posts                 Post[]
+  id             BigInt     @id @default(autoincrement())
+  discord_id     BigInt?
+  username       String     @db.VarChar(32)
+  avatar         Bytes?     @db.ByteA
+  premium        Boolean    @default(false)
+  code_runs_left Int        @default(30)
+  posts          Post[]
+  comments       Comments[]
+  Paste          Paste[]
 }
 
 model Post {
-  id                Int             @id @unique @default(autoincrement())
-  paste_id          String          @unique @default(nanoid(8)) @db.VarChar(8)
-  uploader_id       BigInt          @unique
-  title             String          @db.VarChar(32)
-  description       String          @db.VarChar(500)
-  date              DateTime        @default(now())
-  keywords          String[]        @default([]) @db.VarChar(32)
-  likes             Int?            @default(0)
-  dislikes          Int?            @default(0)
-  comments          Comments[]
-  uploader          User            @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  paste             Paste?
-  
+  id          BigInt     @id @default(autoincrement())
+  uploader_id BigInt
+  title       String     @db.VarChar(32)
+  description String     @db.VarChar(256)
+  uploader    User       @relation(fields: [uploader_id], references: [id])
+  paste_id    String
+  paste       Paste      @relation(fields: [paste_id], references: [id])
+  comments    Comments[]
 }
 
 model Paste {
-  id                String?       @unique @default(nanoid(8))
-  content           String        @db.Text
-  language          String        @db.VarChar(12)
-  uploader_id       BigInt        @id
-  uploader          User          @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  post              Post?         @relation(fields: [id], references: [paste_id], onUpdate: Cascade, onDelete: Cascade)
-  date              DateTime      @default(now())
+  id           String      @id @default(nanoid(8))
+  uploader_id  BigInt
+  content      String      @db.Text
+  content_type ContentType @default(CODE)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  uploader     User        @relation(fields: [uploader_id], references: [id])
+  Post         Post[]
 }
 
 model Comments {
-  uploader_id       BigInt        @id @unique
-  content           String
-  likes             Int?          @default(0)
-  dislikes          Int?          @default(0)
-  date              DateTime      @default(now())
-  post              Post?         @relation(fields: [uploader_id], references: [uploader_id], onUpdate: Cascade, onDelete: Cascade)
-  postId            Int?
-  User              User?         @relation(fields: [userId], references: [id])
-  userId            BigInt?
-}
-
-model Snippet {
-  id                Int             @id @unique @default(autoincrement())
-  code              String
-  language          String          @db.VarChar(12)
-  result            String?         @db.Text
-  date              DateTime        @default(now())
-  uploader_id       BigInt
-  uploader          User            @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id          BigInt   @id @default(autoincrement())
+  post_id     BigInt
+  uploader_id BigInt
+  message     String   @db.VarChar(256)
+  likes       Int      @default(0)
+  dislikes    Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  post        Post     @relation(fields: [post_id], references: [id])
+  uploader    User     @relation(fields: [uploader_id], references: [id])
 }

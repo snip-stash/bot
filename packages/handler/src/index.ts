@@ -14,7 +14,6 @@ import {
 import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
-import { seedPrisma } from "database";
 import { Logger } from "log";
 import { ButtonInteraction } from "./classes/buttonInteraction.js";
 import { CommandInteraction } from "./classes/commandInteraction.js";
@@ -111,5 +110,3 @@ client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, a
     const type = determineInteractionType(interaction);
     interactionHandlers[type](interaction, api);
 });
-
-await seedPrisma();

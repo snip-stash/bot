@@ -20,32 +20,26 @@ export const interaction: Modal = {
         }
 
         const createPost = await (await prisma).post.create({
-            include: { uploader: true, paste: true },
             data: {
                 uploader: {
-                    connectOrCreate: {
-                        where: { id: interaction.member_id },
-                        create: {
-                            id: interaction.member_id,
-                            username: interaction.member_name,
-                        },
+                    create: {
+                        discord_id: interaction.member_id,
+                        username: interaction.member_name,
+                        premium: false,
+                        code_runs_left: 30,
                     },
                 },
                 paste: {
-                    connectOrCreate: {
-                        where: { uploader_id: interaction.member_id },
-                        create: {
-                            content: code,
-                            language,
-                            uploader: {
-                                connect: { id: interaction.member_id },
-                            },
-                        },
+                    create: {
+                        content: code,
+                        content_type: "CODE",
+                        uploader_id: interaction.member_id,
                     },
                 },
                 title: title,
                 description: description,
             },
+            include: { uploader: true, paste: true },
         });
 
         const embed = new EmbedBuilder()
