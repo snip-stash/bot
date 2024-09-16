@@ -8,62 +8,55 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+enum ContentType {
+  CODE
+  ERROR
+}
+
 model User {
-  id                BigInt    @id @default(autoincrement())
-  discord_id        BigInt?   
-  username          String    
-  avatar            Bytes?    @db.ByteA
-  premium           Boolean   @default(false)
-  posts             Int       @default(0)
-  runs              Int       @default(30)
-  Snippets          Snippet[]
-  Pastes            Paste[]
-
-  @@unique([id, discord_id, username])
-
-}
-
-model Comments {
-  id       BigInt   @id @unique @default(autoincrement())
-  content  String
-  likes    Int?
-  dislikes Int?
-  date     DateTime @default(now())
-  Posts    Post[]
-}
-
-model Paste {
-  id          String @id @unique @default(nanoid(8))
-  content     String
-  lang        String @db.VarChar(10)
-  uploader_id BigInt
-  uploader    User   @relation(fields: [uploader_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Posts       Post[] @relation("PostCode")
-  Errors      Post[] @relation("PostError")
+  id             BigInt     @id @default(autoincrement())
+  discord_id     BigInt?
+  username       String     @db.VarChar(32)
+  avatar         Bytes?     @db.ByteA
+  premium        Boolean    @default(false)
+  code_runs_left Int        @default(30)
+  posts          Post[]
+  comments       Comments[]
 }
 
 model Post {
-  id          BigInt    @id @unique @default(autoincrement())
-  title       String    @db.VarChar(32)
-  description String    @db.VarChar(500)
-  date        DateTime? @default(now())
-  likes       Int       @default(0)
-  dislike     Int       @default(0)
-  keywords    String[]  @db.VarChar(32)
-  code        String
-  error       String?
-  comments    BigInt
-  PasteCode   Paste     @relation("PostCode", fields: [code], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  PasteError  Paste?    @relation("PostError", fields: [error], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Comments    Comments  @relation(fields: [comments], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id          String     @id @default(nanoid(8))
+  uploader_id BigInt
+  title       String     @db.VarChar(32)
+  description String     @db.VarChar(256)
+  keywords    String[]   @default([])
+  likes       Int        @default(0)
+  dislikes    Int        @default(0)
+  language    String     @db.VarChar(12)
+  uploader    User       @relation(fields: [uploader_id], references: [id])
+  paste       Paste[]
+  comments    Comments[]
 }
 
-model Snippet {
-  id           BigInt     @id @unique @default(autoincrement())
-  code         String
-  lang         String     @db.VarChar(10)
-  result       String?
-  date         DateTime?  @default(now())
-  user_id      BigInt
-  UserSnippet  User       @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+model Paste {
+  id           String      @id @default(nanoid(8))
+  post_id      String
+  content      String      @db.Text
+  content_type ContentType @default(CODE)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  Post         Post        @relation(fields: [post_id], references: [id])
+}
+
+model Comments {
+  id          BigInt   @id @default(autoincrement())
+  post_id     String
+  uploader_id BigInt
+  message     String   @db.VarChar(256)
+  likes       Int      @default(0)
+  dislikes    Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  post        Post     @relation(fields: [post_id], references: [id])
+  uploader    User     @relation(fields: [uploader_id], references: [id])
 }

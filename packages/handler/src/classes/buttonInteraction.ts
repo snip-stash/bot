@@ -1,5 +1,5 @@
 import type { API, APIMessageComponentInteraction } from "@discordjs/core";
-import { BaseInteraction } from "./BaseInteraction.js";
+import { BaseInteraction } from "./baseInteraction.js";
 
 export class ButtonInteraction extends BaseInteraction {
     constructor(

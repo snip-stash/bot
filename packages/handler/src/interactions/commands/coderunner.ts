@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, inlineCode } from "@discordjs/builders";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import { type Command, getCommandOption } from "../../services/commands.js";
+import type { Command } from "../../services/commands.js";
+import { getCommandOption } from "../../utility/interactionUtils.js";
 
 const languages = Array.from([
     { name: "JavaScript", value: ".js" },
@@ -17,7 +18,7 @@ const languages = Array.from([
     { name: "NASM64", value: ".nasm64" },
 ]);
 
-export const component: Command = {
+export const interaction: Command = {
     data: new SlashCommandBuilder()
         .setName("code-runner")
         .setDescription("Run code in a variety of languages")

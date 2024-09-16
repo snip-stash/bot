@@ -8,7 +8,7 @@ import {
 import { TextInputStyle } from "@discordjs/core";
 import type { Command } from "../../services/commands.js";
 
-export const component: Command = {
+export const interaction: Command = {
     data: new SlashCommandBuilder()
         .setName("create-post")
         .setDescription("Create a post that you want to share/need help with"),
@@ -26,16 +26,25 @@ export const component: Command = {
 
         const descriptionInput = new TextInputBuilder()
             .setCustomId("create-post-description")
-            .setPlaceholder("Description")
+            .setPlaceholder("I am getting a NameError in my JavaScript code, can someone help me?")
             .setMinLength(3)
             .setMaxLength(500)
             .setLabel("Description")
             .setStyle(TextInputStyle.Paragraph)
             .setRequired(true);
 
+        const languageInput = new TextInputBuilder()
+            .setCustomId("create-post-language")
+            .setPlaceholder("js, py, java, etc.")
+            .setMinLength(2)
+            .setMaxLength(12)
+            .setLabel("Language")
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true);
+
         const codeInput = new TextInputBuilder()
             .setCustomId("create-post-code")
-            .setPlaceholder("Code")
+            .setPlaceholder("console.log('Hello, World!')")
             .setMinLength(3)
             .setLabel("Code")
             .setStyle(TextInputStyle.Paragraph)
@@ -43,18 +52,19 @@ export const component: Command = {
 
         const errorInput = new TextInputBuilder()
             .setCustomId("create-post-error")
-            .setPlaceholder("Error")
+            .setPlaceholder("NameError: name 'foo' is not defined")
             .setMinLength(3)
             .setLabel("Error")
             .setStyle(TextInputStyle.Paragraph)
             .setRequired(false);
 
-        const firstActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-        const secondActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(descriptionInput);
-        const thirdActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(codeInput);
-        const fourthActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(errorInput);
+        const titleRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
+        const descriptionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(descriptionInput);
+        const languageRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(languageInput);
+        const codeRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(codeInput);
+        const errorRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(errorInput);
 
-        modal.addComponents(firstActionRow, secondActionRow, thirdActionRow, fourthActionRow);
+        modal.addComponents(titleRow, descriptionRow, languageRow, codeRow, errorRow);
         await interaction.deployModal(modal);
     },
 };

@@ -1,7 +1,7 @@
 import { EmbedBuilder, SlashCommandBuilder, bold, inlineCode } from "@discordjs/builders";
 import { type Command, FileType, load } from "../../services/commands.js";
 
-export const component: Command = {
+export const interaction: Command = {
     data: new SlashCommandBuilder().setName("help").setDescription("View a list of commands from the bot"),
     async execute(interaction): Promise<void> {
         const commands = await load(FileType.Commands);

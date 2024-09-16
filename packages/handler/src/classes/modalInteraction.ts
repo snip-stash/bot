@@ -1,5 +1,5 @@
 import type { API, APIModalSubmitInteraction } from "@discordjs/core";
-import { BaseInteraction } from "./BaseInteraction.js";
+import { BaseInteraction } from "./baseInteraction.js";
 
 export class ModalInteraction extends BaseInteraction {
     constructor(

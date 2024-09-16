@@ -1,24 +1,26 @@
 import {
+    type API,
+    type APIApplicationCommandAutocompleteInteraction,
     type APIChatInputApplicationCommandInteraction,
-    type APIMessageComponentInteraction,
+    type APIMessageApplicationCommandInteraction,
+    type APIMessageComponentButtonInteraction,
+    type APIMessageComponentSelectMenuInteraction,
     type APIModalSubmitInteraction,
-    ApplicationCommandType,
+    type APIUserApplicationCommandInteraction,
     Client,
     GatewayDispatchEvents,
-    InteractionType,
 } from "@discordjs/core";
 
 import { REST } from "@discordjs/rest";
 import { getRedis } from "core";
 import { env } from "core/dist/env.js";
-import { seedPrisma } from "database";
-import { ComponentType } from "discord-api-types/v10";
 import { Logger } from "log";
-import { ButtonInteraction } from "./classes/ButtonInteraction.js";
-import { CommandInteraction } from "./classes/CommandInteraction.js";
-import { ModalInteraction } from "./classes/ModalInteraction.js";
+import { ButtonInteraction } from "./classes/buttonInteraction.js";
+import { CommandInteraction } from "./classes/commandInteraction.js";
+import { ModalInteraction } from "./classes/modalInteraction.js";
 import { Gateway } from "./gateway.js";
 import { FileType, load } from "./services/commands.js";
+import { InteractType, determineInteractionType } from "./utility/interactionUtils.js";
 
 const logger = new Logger();
 export const commands = await load(FileType.Commands);
@@ -30,27 +32,71 @@ const gateway = new Gateway({ redis, env });
 await gateway.connect();
 const client = new Client({ rest, gateway });
 
-function isChatInput(interaction: any): interaction is APIChatInputApplicationCommandInteraction {
-    return (
-        interaction.type === InteractionType.ApplicationCommand &&
-        interaction.data.type === ApplicationCommandType.ChatInput
-    );
-}
+const interactionHandlers: Record<InteractType, (interaction: any, api: API) => void> = {
+    [InteractType.Autocomplete]: (interaction: APIApplicationCommandAutocompleteInteraction) => {
+        logger.infoSingle(`Received autocomplete interaction: ${interaction.data.name}`, "Handler");
+    },
+    [InteractType.ChatInput]: (interaction: APIChatInputApplicationCommandInteraction, api) => {
+        logger.debugSingle(`Received chat input interaction: ${interaction.data.name}`, "Handler");
 
-function isButtonType(interaction: any): interaction is APIMessageComponentInteraction {
-    return (
-        interaction.type === InteractionType.MessageComponent &&
-        interaction.data.component_type === ComponentType.Button
-    );
-}
+        const command = commands.get(interaction.data.name);
+        if (!command) {
+            logger.warn(`Command not found: ${interaction.data.name}`, "Handler");
+            return;
+        }
 
-function isModalType(interaction: any): interaction is APIModalSubmitInteraction {
-    return interaction.type === InteractionType.ModalSubmit;
-}
+        try {
+            logger.infoSingle(`Executing command: ${command.data.name}`, "Handler");
+            command.execute(new CommandInteraction(interaction, api));
+        } catch (error: any) {
+            logger.error("Command execution error:", "Handler", error);
+        }
+    },
+    [InteractType.Modal]: (interaction: APIModalSubmitInteraction, api) => {
+        logger.debugSingle(`Received modal interaction: ${interaction.data.custom_id}`, "Handler");
 
-client.on(GatewayDispatchEvents.MessageCreate, async ({ data: message }) => {
-    logger.infoSingle(`Received message: ${message.content}`, "Handler");
-});
+        const modal = modals.get(interaction.data.custom_id);
+        if (!modal) {
+            logger.warn(`Modal not found: ${interaction.data.custom_id}`, "Handler");
+            return;
+        }
+
+        try {
+            logger.infoSingle(`Executing modal: ${modal.custom_id}`, "Handler");
+            modal.execute(new ModalInteraction(interaction, api));
+        } catch (error: any) {
+            logger.error("Modal execution error:", "Handler", error);
+        }
+    },
+    [InteractType.UserContext]: (interaction: APIUserApplicationCommandInteraction) => {
+        logger.debugSingle(`Received user context interaction: ${interaction.data.name}`, "Handler");
+    },
+    [InteractType.MessageContext]: (interaction: APIMessageApplicationCommandInteraction) => {
+        logger.debugSingle(`Received message context interaction: ${interaction.data.name}`, "Handler");
+    },
+    [InteractType.Button]: (interaction: APIMessageComponentButtonInteraction, api) => {
+        logger.debugSingle(`Received button interaction: ${interaction.data.custom_id}`, "Handler");
+
+        const button = buttons.get(interaction.data.custom_id);
+        if (!button) {
+            logger.warn(`Button not found: ${interaction.data.custom_id}`, "Handler");
+            return;
+        }
+
+        try {
+            logger.infoSingle(`Executing button: ${button.custom_id}`, "Handler");
+            button.execute(new ButtonInteraction(interaction, api));
+        } catch (error: any) {
+            logger.error("Button execution error:", "Handler", error);
+        }
+    },
+    [InteractType.SelectMenu]: (interaction: APIMessageComponentSelectMenuInteraction) => {
+        logger.debugSingle(`Received select menu interaction: ${interaction.data.custom_id}`, "Handler");
+    },
+    [InteractType.Unknown]: (interaction: any) => {
+        logger.warn(`Unknown interaction type: ${interaction.type}`, "Handler");
+    },
+};
 
 client.on(GatewayDispatchEvents.Ready, () => {
     logger.infoSingle("Ready", "Handler");
@@ -61,43 +107,6 @@ client.on(GatewayDispatchEvents.Resumed, () => {
 });
 
 client.on(GatewayDispatchEvents.InteractionCreate, async ({ data: interaction, api }) => {
-    if (isModalType(interaction)) {
-        logger.infoSingle(`Received modal interaction: ${interaction.data.custom_id}`, "Handler");
-        const modal = modals.get(interaction.data.custom_id);
-        if (!modal) return;
-
-        try {
-            logger.infoSingle(`Executing modal: ${modal.custom_id}`, "Handler");
-            modal.execute(new ModalInteraction(interaction, api));
-        } catch (error: any) {
-            logger.error("Modal execution error:", "Handler", error);
-        }
-    }
-
-    if (isButtonType(interaction)) {
-        const button = buttons.get(interaction.data?.custom_id);
-        if (!button) return;
-
-        try {
-            logger.infoSingle(`Executing button: ${button.custom_id}`, "Handler");
-            button.execute(new ButtonInteraction(interaction, api));
-        } catch (error: any) {
-            logger.error("Button execution error:", "Handler", error);
-        }
-    }
-
-    if (isChatInput(interaction)) {
-        const command = commands.get(interaction.data.name);
-
-        if (!command) return;
-
-        try {
-            logger.infoSingle(`Executing command: ${command.data.name}`, "Handler");
-            command.execute(new CommandInteraction(interaction, api));
-        } catch (error: any) {
-            logger.error("Command execution error:", "Handler", error);
-        }
-    }
+    const type = determineInteractionType(interaction);
+    interactionHandlers[type](interaction, api);
 });
-
-await seedPrisma();

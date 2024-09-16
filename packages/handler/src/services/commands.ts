@@ -1,20 +1,13 @@
 import { readdir } from "node:fs/promises";
 import { URL } from "node:url";
 import type { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "@discordjs/builders";
-import {
-    type APIApplicationCommandInteractionDataBasicOption,
-    type APIApplicationCommandInteractionDataOption,
-    type APIApplicationCommandInteractionDataSubcommandOption,
-    ApplicationCommandOptionType,
-    type Snowflake,
-} from "@discordjs/core";
 import { REST } from "@discordjs/rest";
 import { env } from "core";
 import { Routes } from "discord-api-types/v10";
 import { Logger } from "log";
-import type { ButtonInteraction } from "../classes/ButtonInteraction.js";
-import type { CommandInteraction } from "../classes/CommandInteraction.js";
-import type { ModalInteraction } from "../classes/ModalInteraction.js";
+import type { ButtonInteraction } from "../classes/buttonInteraction.js";
+import type { CommandInteraction } from "../classes/commandInteraction.js";
+import type { ModalInteraction } from "../classes/modalInteraction.js";
 
 export interface Command {
     data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
@@ -30,80 +23,6 @@ export interface Modal {
     execute: (interaction: ModalInteraction) => void;
 }
 
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Subcommand,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): APIApplicationCommandInteractionDataBasicOption[] | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.SubcommandGroup,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): APIApplicationCommandInteractionDataSubcommandOption[] | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Number,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): number | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Mentionable,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): Snowflake | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Integer,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): number | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Attachment,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): Snowflake | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Role,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): Snowflake | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.User,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): Snowflake | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Channel,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): Snowflake | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.Boolean,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): boolean | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType.String,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): string | null;
-export function getCommandOption(
-    name: string,
-    type: ApplicationCommandOptionType,
-    options?: APIApplicationCommandInteractionDataOption[] | undefined,
-): any | null {
-    if (!options) return null;
-
-    const option = options.find((option) => option.name === name);
-
-    if (option?.type !== type) return null;
-
-    if (
-        option.type === ApplicationCommandOptionType.Subcommand ||
-        option.type === ApplicationCommandOptionType.SubcommandGroup
-    )
-        return option.options;
-    return option.value;
-}
-
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);
 const logger = new Logger();
 
@@ -115,10 +34,7 @@ export async function deployCommands(commands: Map<string, Command>) {
             body: Array.from(commands.values()).map((command) => command.data.toJSON()),
         });
 
-        logger.info("Successfully deployed global application (/) commands.", "Commands", {
-            commands: Array.from(commands.keys()),
-            count: commands.size,
-        });
+        logger.infoSingle("Successfully deployed global application (/) commands.", "Commands");
 
         if (env.DISCORD_TEST_GUILD_ID) {
             await rest.put(Routes.applicationGuildCommands(env.DISCORD_APPLICATION_ID, env.DISCORD_TEST_GUILD_ID), {
@@ -128,10 +44,7 @@ export async function deployCommands(commands: Map<string, Command>) {
                 }),
             });
 
-            logger.info("Successfully deployed guild application (/) commands.", "Commands", {
-                commands: Array.from(commands.keys()),
-                count: commands.size,
-            });
+            logger.infoSingle("Successfully deployed guild application (/) commands.", "Commands");
         }
     } catch (error: any) {
         logger.error("Failed to deploy global application (/) commands.", "Commands", error);
@@ -148,10 +61,10 @@ export async function load<T = Command>(type: FileType.Commands): Promise<Map<st
 export async function load<T = Button>(type: FileType.Buttons): Promise<Map<string, T>>;
 export async function load<T = Modal>(type: FileType.Modals): Promise<Map<string, T>>;
 export async function load<T>(type: FileType): Promise<Map<string, T>> {
-    logger.infoSingle("Started loading application (📝) files.", "Files");
+    logger.infoSingle(`Started loading ${type} (📝) files.`, "Files");
 
     const files = new Map<string, T>();
-    const allFiles = await readdir(new URL(`../components/${type}/`, import.meta.url));
+    const allFiles = await readdir(new URL(`../interactions/${type}/`, import.meta.url));
 
     if (!allFiles) {
         logger.error(`Failed to find ${type} (📝)`, "Files");
@@ -162,14 +75,14 @@ export async function load<T>(type: FileType): Promise<Map<string, T>> {
 
     for (const file of jsFiles) {
         try {
-            const component = (await import(`../components/${type}/${file}`)).component;
-            files.set(getName(component), component);
+            const interaction = (await import(`../interactions/${type}/${file}`)).interaction;
+            files.set(getName(interaction), interaction);
         } catch (error: any) {
             logger.error(`Failed to load ${type} (📝) file: ${file}`, "Files", error);
         }
     }
 
-    logger.info("Successfully imported application (📝) files.", "Files", {
+    logger.info(`Successfully imported ${type} (📝) files.`, "Files", {
         files: Array.from(files.keys()),
         count: files.size,
     });
@@ -177,7 +90,7 @@ export async function load<T>(type: FileType): Promise<Map<string, T>> {
     return files;
 }
 
-function getName(component: Command | Button | Modal): string {
-    if ("data" in component) return component.data.name;
-    return component.custom_id;
+function getName(interaction: Command | Button | Modal): string {
+    if ("data" in interaction) return interaction.data.name;
+    return interaction.custom_id;
 }
