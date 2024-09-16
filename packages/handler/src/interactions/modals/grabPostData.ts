@@ -1,54 +1,6 @@
 import { EmbedBuilder, bold, codeBlock, formatEmoji, inlineCode } from "@discordjs/builders";
-import prisma from "database";
+import { createPost } from "database";
 import type { Modal } from "../../services/commands.js";
-
-// Replace this function someplace else, like in a utility file.
-async function createPost(
-    interaction: any,
-    code: string,
-    error: string | null,
-    title: string,
-    description: string,
-    language: string,
-) {
-    // There needs to be a check to see if the user already exists in the database.
-    // Add this whenever this function gets replaced
-    const user = await (await prisma).user.create({
-        data: {
-            id: interaction.member_id,
-            discord_id: interaction.member_id,
-            username: interaction.member_name,
-            premium: false,
-            code_runs_left: 30,
-        },
-    });
-    
-    const post = await (await prisma).post.create({
-        data: {
-            paste: {
-                create: [
-                    {
-                        content: code,
-                        content_type: "CODE",
-                    },
-                    {
-                        content: error || "",
-                        content_type: "ERROR",
-                    },
-                ],
-            },
-            uploader_id: user.id,
-            title: title,
-            description: description,
-            likes: 0,
-            dislikes: 0,
-            language: language,
-        },
-        include: { uploader: true, paste: true },
-    });
-
-    return post;
-}
 
 export const interaction: Modal = {
     custom_id: "create-post-modal",
