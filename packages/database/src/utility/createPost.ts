@@ -1,4 +1,4 @@
-import type { Post } from "../../prisma/gen/client/default.js";
+import { ContentType, type Post } from "../../prisma/gen/client/default.js";
 import prisma from "../index.js";
 
 export async function createPost(
@@ -9,7 +9,9 @@ export async function createPost(
     description: string,
     language: string,
 ): Promise<Post> {
-    const user = await (await prisma).user.upsert({
+    const db = await prisma;
+
+    const user = await db.user.upsert({
         create: {
             id: interaction.member_id,
             discord_id: interaction.member_id,
@@ -26,19 +28,25 @@ export async function createPost(
         },
     });
 
-    const post = await (await prisma).post.create({
+    const pasteContent = [];
+
+    // I dont understand why it wont just accept this above
+    pasteContent.push({
+        content: code,
+        content_type: ContentType.CODE,
+    });
+
+    if (error) {
+        pasteContent.push({
+            content: error,
+            content_type: ContentType.ERROR,
+        });
+    }
+
+    const post = await db.post.create({
         data: {
             paste: {
-                create: [
-                    {
-                        content: code,
-                        content_type: "CODE",
-                    },
-                    {
-                        content: error || "",
-                        content_type: "ERROR",
-                    },
-                ],
+                create: pasteContent,
             },
             uploader_id: user.id,
             title: title,

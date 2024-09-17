@@ -14,6 +14,8 @@ import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import type { Command } from "../../services/commands.js";
 import { getCommandOption } from "../../utility/interactionUtils.js";
 
+const db = await prisma;
+
 export const interaction: Command = {
     data: new SlashCommandBuilder()
         .setName("get-post")
@@ -21,7 +23,7 @@ export const interaction: Command = {
         .addStringOption((option) => option.setName("id").setDescription("The ID of the post").setRequired(true)),
     async execute(interaction): Promise<void> {
         const getOption = getCommandOption("id", ApplicationCommandOptionType.String, interaction.options) || "";
-        const getQuery = await (await prisma).post.findUnique({
+        const getQuery = await db.post.findUnique({
             include: { paste: true },
             where: { id: getOption },
         });
@@ -36,7 +38,7 @@ export const interaction: Command = {
 
         const embed = new EmbedBuilder()
             .setDescription(`
-                ${formatEmoji("1283395868648673331")} ${bold(inlineCode(getQuery.title))}
+                ${formatEmoji("1283395868648673331")} ${bold(inlineCode(getQuery.title))}\n
                 ${formatEmoji("1283395921366880266")} ${bold(inlineCode("description"))}
                 ${codeBlock(getQuery.language, getQuery.description)}
                 ${formatEmoji("1283395929444978740")} ${bold(inlineCode("Code"))}
