@@ -81,6 +81,7 @@ model Comments {
 model Snippets {
   id            String   @id @default(nanoid(8))
   snippet_image Bytes    @db.ByteA
+  result        String?
   uploader_id   BigInt
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
