@@ -18,6 +18,7 @@ export interface Button {
     custom_id: string;
     execute: (interaction: ButtonInteraction) => void;
 }
+
 export interface Modal<T = undefined> {
     custom_id: string;
     parse?: (data: string[]) => T;
