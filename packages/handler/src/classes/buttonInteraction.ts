@@ -12,4 +12,8 @@ export class ButtonInteraction extends BaseInteraction {
     get custom_id() {
         return this.interaction.data.custom_id;
     }
+
+    get embed_data() {
+        return this.interaction.message.embeds[0];
+    }
 }

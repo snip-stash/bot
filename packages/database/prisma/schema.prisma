@@ -13,29 +13,46 @@ enum ContentType {
   ERROR
 }
 
+enum InteractionType {
+  LIKE
+  DISLIKE
+}
+
 model User {
-  id             BigInt     @id @default(autoincrement())
-  discord_id     BigInt?
-  username       String     @db.VarChar(32)
-  avatar         Bytes?     @db.ByteA
-  premium        Boolean    @default(false)
-  code_runs_left Int        @default(30)
-  posts          Post[]
-  comments       Comments[]
+  id               BigInt     @id @default(autoincrement())
+  discord_id       BigInt?
+  username         String     @db.VarChar(32)
+  avatar           Bytes?     @db.ByteA
+  premium          Boolean    @default(false)
+  code_runs_left   Int        @default(30)
+  posts            Post[]
+  comments         Comments[]
+  postinteractions PostInteraction[]
+  snippets         Snippets[]
 }
 
 model Post {
-  id          String     @id @default(nanoid(8))
-  uploader_id BigInt
-  title       String     @db.VarChar(32)
-  description String     @db.VarChar(256)
-  keywords    String[]   @default([])
-  likes       Int        @default(0)
-  dislikes    Int        @default(0)
-  language    String     @db.VarChar(12)
-  uploader    User       @relation(fields: [uploader_id], references: [id])
-  paste       Paste[]
-  comments    Comments[]
+  id                String     @id @default(nanoid(8))
+  uploader_id       BigInt
+  title             String     @db.VarChar(32)
+  description       String     @db.VarChar(256)
+  keywords          String[]   @default([])
+  likes             Int        @default(0)
+  dislikes          Int        @default(0)
+  language          String     @db.VarChar(12)
+  uploader          User       @relation(fields: [uploader_id], references: [id])
+  paste             Paste[]
+  comments          Comments[]
+  postsinteractions PostInteraction[]
+}
+
+model PostInteraction {
+  id          BigInt   @id @default(autoincrement())
+  post_id     String
+  user_id     BigInt
+  interaction InteractionType @default(LIKE)
+  post        Post     @relation(fields: [post_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 }
 
 model Paste {
@@ -59,4 +76,14 @@ model Comments {
   updated_at  DateTime @updatedAt
   post        Post     @relation(fields: [post_id], references: [id])
   uploader    User     @relation(fields: [uploader_id], references: [id])
+}
+
+model Snippets {
+  id            String   @id @default(nanoid(8))
+  snippet_image Bytes    @db.ByteA
+  result        String?
+  uploader_id   BigInt
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  uploader      User     @relation(fields: [uploader_id], references: [id])
 }
