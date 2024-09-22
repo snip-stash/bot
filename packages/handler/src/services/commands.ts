@@ -18,9 +18,10 @@ export interface Button {
     custom_id: string;
     execute: (interaction: ButtonInteraction) => void;
 }
-export interface Modal {
+export interface Modal<T = undefined> {
     custom_id: string;
-    execute: (interaction: ModalInteraction) => void;
+    parse?: (data: string[]) => T;
+    execute: (interaction: ModalInteraction, data: T) => void;
 }
 
 const rest = new REST({ version: "10" }).setToken(env.DISCORD_TOKEN);

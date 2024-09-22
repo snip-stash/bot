@@ -10,6 +10,8 @@ export const envSchema = z.object({
     POSTGRES_DB: z.string().default("bot"),
     POSTGRES_USER: z.string().default("admin"),
     POSTGRES_PASSWORD: z.string().default("root"),
+    PISTON_HOST: z.string().default("piston"),
+    PISTON_PORT: z.coerce.number().default(2000),
     REDIS_HOST: z.string().default("localhost"),
     REDIS_PORT: z.coerce.number().default(6379),
     REDIS_PASSWORD: z.string().default(""),
