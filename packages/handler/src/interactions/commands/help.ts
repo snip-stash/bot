@@ -18,6 +18,8 @@ export const interaction: Command = {
             getCommandOption("command", ApplicationCommandOptionType.String, interaction.options) || null;
         const commands = await load(FileType.Commands);
         const maxLength = Math.max(...Array.from(commands.values()).map((command) => command.data.name.length)) + 2;
+        const padHeader = Math.max("commands".length, maxLength) + 1;
+        const padFront = maxLength + 2;
 
         if (commandName) {
             const command = commands.get(commandName);
@@ -29,20 +31,27 @@ export const interaction: Command = {
                 ${formatEmoji("1283395929444978740")} ${bold(inlineCode("description"))}
                 ${command.data.description}\n
                 ${formatEmoji("1283395879176503376")} ${bold(inlineCode("options"))}
-                ${command.data.options?.map((option) => `${bold(inlineCode(option.toJSON().name.padEnd(maxLength)))} ${option.toJSON().description}`).join("\n") || bold("No options available")}
+                ${
+                    command.data.options
+                        ?.map(
+                            (option) => `${bold(inlineCode(option.toJSON().name))}: ${option.toJSON().description}`,
+                        )
+                        .join("\n") || bold("No options available")
+                }
                 `);
 
             return await interaction.reply({ embeds: [embed] });
         }
 
+        const paddedHeader = "commands".padStart((padHeader + "commands".length) / 2).padEnd(padHeader);
         const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setDescription(
-                `${formatEmoji("1283395921366880266")}  ${bold(inlineCode("commands"))}\n\n${Array.from(
+                `${formatEmoji("1283395921366880266")}  ${bold(inlineCode(paddedHeader))}\n\n${Array.from(
                     commands.values(),
                 )
                     .map((command) => {
-                        const paddedName = command.data.name.padEnd(maxLength);
+                        const paddedName = command.data.name.padEnd(maxLength).padStart(padFront);
                         return `${inlineCode(paddedName)} ${command.data.description}`;
                     })
                     .join("\n")}`,
