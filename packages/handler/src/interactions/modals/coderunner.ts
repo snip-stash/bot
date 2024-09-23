@@ -23,7 +23,6 @@ type ModalData = {
     version: string;
 };
 
-const PISTON_URL = `http://${env.PISTON_HOST}:${env.PISTON_PORT}/api/v2`;
 const logger = new Logger();
 
 export const interaction: Modal<ModalData> = {
@@ -47,7 +46,7 @@ export const interaction: Modal<ModalData> = {
             return await interaction.reply({ content: "Please input the code to run", ephemeral: true });
         }
 
-        const response = (await fetch(`${PISTON_URL}/execute`, {
+        const response = (await fetch(`${env.PISTON_URL}/execute`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
