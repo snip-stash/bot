@@ -18,16 +18,25 @@ type Runtime = {
     aliases: string[];
     runtime: string;
 };
-
-const PISTON_URL = `http://${env.PISTON_HOST}:${env.PISTON_PORT}/api/v2`;
 const logger = new Logger();
 
 const languages = Array.from([
-    { name: "JavaScript", value: "js" },
-    { name: "TypeScript", value: "ts" },
+    { name: "JavaScript", value: ".js" },
+    { name: "TypeScript", value: ".ts" },
+    { name: "Python", value: ".py" },
+    { name: "C", value: ".c" },
+    { name: "C++", value: ".cpp" },
+    { name: "Java", value: ".java" },
+    { name: "Rust", value: ".rs" },
+    { name: "C#", value: ".cs" },
+    { name: "Zig", value: ".zig" },
+    { name: "Lua", value: ".lua" },
+    { name: "NASM", value: ".nasm" },
+    { name: "NASM64", value: ".nasm64" },
 ]);
 
-const runtimes = (await (await fetch(`${PISTON_URL}/runtimes`)).json()) as Runtime[];
+const runtimes = (await (await fetch(`${env.PISTON_URL}/runtimes`)).json()) as Runtime[];
+logger.info("Loaded runtimes", "Piston", runtimes);
 
 export const interaction: Command = {
     data: new SlashCommandBuilder()
