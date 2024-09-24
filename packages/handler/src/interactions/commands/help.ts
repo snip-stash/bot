@@ -33,9 +33,7 @@ export const interaction: Command = {
                 ${formatEmoji("1283395879176503376")} ${bold(inlineCode("options"))}
                 ${
                     command.data.options
-                        ?.map(
-                            (option) => `${bold(inlineCode(option.toJSON().name))}: ${option.toJSON().description}`,
-                        )
+                        ?.map((option) => `${bold(inlineCode(option.toJSON().name))}: ${option.toJSON().description}`)
                         .join("\n") || bold("No options available")
                 }
                 `);

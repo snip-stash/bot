@@ -55,15 +55,18 @@ const interactionHandlers: Record<InteractType, (interaction: any, api: API) => 
     [InteractType.Modal]: (interaction: APIModalSubmitInteraction, api) => {
         logger.debugSingle(`Received modal interaction: ${interaction.data.custom_id}`, "Handler");
 
-        const modal = modals.get(interaction.data.custom_id);
+        const [modalId, ...data] = interaction.data.custom_id.split(":") as [string, ...string[]];
+
+        const modal = modals.get(modalId);
+
         if (!modal) {
-            logger.warn(`Modal not found: ${interaction.data.custom_id}`, "Handler");
+            logger.warn(`Modal not found: ${modalId}`, "Handler");
             return;
         }
 
         try {
-            logger.infoSingle(`Executing modal: ${modal.custom_id}`, "Handler");
-            modal.execute(new ModalInteraction(interaction, api));
+            logger.infoSingle(`Executing modal: ${modalId}`, "Handler");
+            modal.execute(new ModalInteraction(interaction, api), modal.parse?.(data));
         } catch (error: any) {
             logger.error("Modal execution error:", "Handler", error);
         }
